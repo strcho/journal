@@ -1,5 +1,7 @@
 # My Day One
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 Offline-first personal journal app inspired by Day One. Entries use a rich
 text editor (Quill), are encrypted locally, and support embedded images with
 encrypted attachment storage. Designed for future self-hosted sync with

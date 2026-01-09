@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../data/entry.dart';
@@ -34,10 +35,12 @@ class _EntryListScreenState extends State<EntryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM d, yyyy • HH:mm');
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = l10n.localeName;
+    final dateFormat = DateFormat.yMMMd(localeName).add_Hm();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Day One'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -58,7 +61,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
               onChanged: (value) => setState(() => _query = value),
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
-                hintText: 'Search entries',
+                hintText: l10n.searchEntriesHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _query.isEmpty
                     ? null
@@ -92,17 +95,17 @@ class _EntryListScreenState extends State<EntryListScreen> {
                   children: [
                     const Icon(Icons.auto_stories, size: 48),
                     const SizedBox(height: 12),
-                    const Text(
-                      'No entries yet',
-                      style: TextStyle(fontSize: 18),
+                    Text(
+                      l10n.noEntriesTitle,
+                      style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Tap + to start your first journal entry.'),
+                    Text(l10n.noEntriesBody),
                     const SizedBox(height: 16),
                     FilledButton.icon(
                       onPressed: () => _openEditor(context),
                       icon: const Icon(Icons.add),
-                      label: const Text('New entry'),
+                      label: Text(l10n.newEntry),
                     ),
                   ],
                 ),
@@ -117,13 +120,13 @@ class _EntryListScreenState extends State<EntryListScreen> {
             itemBuilder: (context, index) {
               final entry = entries[index];
               final title = entry.title.trim().isEmpty
-                  ? 'Untitled'
+                  ? l10n.untitled
                   : entry.title.trim();
               final preview = entry.plainText.trim().replaceAll('\n', ' ');
               return ListTile(
                 title: Text(title),
                 subtitle: preview.isEmpty
-                    ? const Text('No content yet')
+                    ? Text(l10n.noContent)
                     : Text(
                         preview,
                         maxLines: 2,

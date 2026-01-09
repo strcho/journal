@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_day_one/l10n/app_localizations.dart';
 
 import '../security/app_lock_service.dart';
 
@@ -117,8 +118,9 @@ class _AppLockGateState extends State<AppLockGate>
     }
 
     _authInProgress = true;
+    final l10n = AppLocalizations.of(context)!;
     final success = await widget.appLockService.authenticate(
-      reason: 'Unlock your journal',
+      reason: l10n.unlockReason,
     );
     if (!mounted) {
       return;
@@ -148,16 +150,16 @@ class _AppLockGateState extends State<AppLockGate>
                 const Icon(Icons.lock_outline, size: 56),
                 const SizedBox(height: 12),
                 Text(
-                  'Journal locked',
+                  AppLocalizations.of(context)!.journalLockedTitle,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 8),
-                const Text('Authenticate to continue.'),
+                Text(AppLocalizations.of(context)!.journalLockedBody),
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: _attemptUnlock,
                   icon: const Icon(Icons.lock_open),
-                  label: const Text('Unlock'),
+                  label: Text(AppLocalizations.of(context)!.unlock),
                 ),
               ],
             ),

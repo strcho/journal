@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
 
@@ -25,8 +26,9 @@ class EntryDetailScreen extends StatelessWidget {
       builder: (context, snapshot) {
         final entry = snapshot.data;
         if (entry == null || entry.deletedAt != null) {
-          return const Scaffold(
-            body: Center(child: Text('Entry not found.')),
+          final l10n = AppLocalizations.of(context)!;
+          return Scaffold(
+            body: Center(child: Text(l10n.entryNotFound)),
           );
         }
 
@@ -36,12 +38,14 @@ class EntryDetailScreen extends StatelessWidget {
         );
         controller.readOnly = true;
 
-        final dateLabel = DateFormat('MMM d, yyyy • HH:mm')
+        final l10n = AppLocalizations.of(context)!;
+        final dateLabel = DateFormat.yMMMd(l10n.localeName)
+            .add_Hm()
             .format(entry.updatedAt);
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Entry'),
+            title: Text(l10n.entryDetailTitle),
             actions: [
               IconButton(
                 icon: const Icon(Icons.edit),
@@ -64,7 +68,9 @@ class EntryDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                entry.title.trim().isEmpty ? 'Untitled' : entry.title.trim(),
+                entry.title.trim().isEmpty
+                    ? l10n.untitled
+                    : entry.title.trim(),
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 4),
@@ -91,20 +97,23 @@ class EntryDetailScreen extends StatelessWidget {
   Future<void> _confirmDelete(BuildContext context, Entry entry) async {
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete entry?'),
-        content: const Text('This will remove the entry from your journal.'),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          title: Text(l10n.deleteEntryTitle),
+          content: Text(l10n.deleteEntryMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
-      ),
+        );
+      },
     );
 
     if (result == true) {

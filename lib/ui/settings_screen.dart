@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_day_one/l10n/app_localizations.dart';
 
 import '../security/app_lock_service.dart';
 
@@ -14,13 +15,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _available = false;
   bool _loading = true;
-  final Map<Duration, String> _timeoutOptions = {
-    Duration.zero: 'Immediately',
-    const Duration(minutes: 1): 'After 1 minute',
-    const Duration(minutes: 5): 'After 5 minutes',
-    const Duration(minutes: 15): 'After 15 minutes',
-  };
-
   @override
   void initState() {
     super.initState();
@@ -40,8 +34,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final timeoutOptions = {
+      Duration.zero: l10n.lockAfterImmediately,
+      const Duration(minutes: 1): l10n.lockAfter1Min,
+      const Duration(minutes: 5): l10n.lockAfter5Min,
+      const Duration(minutes: 15): l10n.lockAfter15Min,
+    };
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -49,13 +51,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             valueListenable: widget.appLockService.enabled,
             builder: (context, enabled, _) {
               return SwitchListTile(
-                title: const Text('App lock'),
+                title: Text(l10n.appLockTitle),
                 subtitle: Text(
                   _loading
-                      ? 'Checking device security...'
+                      ? l10n.appLockSubtitleChecking
                       : _available
-                          ? 'Require biometrics or device passcode'
-                          : 'Device authentication is not available',
+                          ? l10n.appLockSubtitleEnabled
+                          : l10n.appLockSubtitleUnavailable,
                 ),
                 value: enabled,
                 onChanged: _loading || !_available ? null : _toggleLock,
@@ -70,17 +72,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 valueListenable: widget.appLockService.timeout,
                 builder: (context, timeout, child) {
                   return InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Lock after',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.lockAfterLabel,
+                      border: const OutlineInputBorder(),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<Duration>(
-                        value: _timeoutOptions.containsKey(timeout)
+                        value: timeoutOptions.containsKey(timeout)
                             ? timeout
                             : Duration.zero,
                         isExpanded: true,
-                        items: _timeoutOptions.entries
+                        items: timeoutOptions.entries
                             .map(
                               (entry) => DropdownMenuItem<Duration>(
                                 value: entry.key,
@@ -114,23 +116,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'App lock tips',
+                        l10n.appLockTipsTitle,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    '- Uses device biometrics or passcode\n'
-                    '- Lock after only applies when the app is in background\n'
-                    '- Keep device security enabled for best protection',
-                  ),
+                  Text(l10n.appLockTipsBody),
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
                       onPressed: _showAppLockHelp,
-                      child: const Text('Learn more'),
+                      child: Text(l10n.learnMore),
                     ),
                   ),
                 ],
@@ -147,8 +145,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final success = await widget.appLockService.authenticate(
-      reason: value ? 'Enable app lock' : 'Disable app lock',
+      reason: value ? l10n.enableAppLockReason : l10n.disableAppLockReason,
     );
     if (!success || !mounted) {
       return;
@@ -170,21 +169,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _showAppLockHelp() async {
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('App lock help'),
-        content: const Text(
-          'App lock requires device authentication. If you disable biometrics '
-          'or passcode at the system level, app lock will stop working.\n\n'
-          'Lock after only triggers when the app is backgrounded. It does not '
-          'lock while you are actively using the app.',
-        ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return AlertDialog(
+          title: Text(l10n.appLockHelpTitle),
+          content: Text(l10n.appLockHelpBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
-      ),
+        );
+      },
     );
   }
 }

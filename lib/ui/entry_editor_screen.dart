@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
@@ -93,11 +94,14 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
         final entry = snapshot.data!;
         _initializeControllers(entry);
         final controller = _quillController!;
+        final l10n = AppLocalizations.of(context)!;
         final isExisting = entry.id != 0;
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(isExisting ? 'Edit entry' : 'New entry'),
+            title: Text(
+              isExisting ? l10n.editEntryTitle : l10n.newEntryTitle,
+            ),
             actions: [
               IconButton(
                 onPressed: _isSaving ? null : _saveEntry,
@@ -111,9 +115,9 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: TextField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
-                    hintText: 'Title',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: l10n.entryTitleLabel,
+                    border: const OutlineInputBorder(),
                   ),
                   textInputAction: TextInputAction.next,
                 ),
@@ -124,7 +128,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                   customButtons: [
                     QuillToolbarCustomButtonOptions(
                       icon: const Icon(Icons.image_outlined),
-                      tooltip: 'Insert image',
+                      tooltip: l10n.insertImage,
                       onPressed: _insertImages,
                     ),
                   ],

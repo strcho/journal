@@ -38,5 +38,15 @@
   "unlock": "解锁",
   "unlockReason": "解锁日记",
   "enableAppLockReason": "开启应用锁",
-  "disableAppLockReason": "关闭应用锁"
+  "disableAppLockReason": "关闭应用锁",
+  "calendarTitle": "日历",
+  "entriesOnDateTitle": "{date} 的日记",
+  "@entriesOnDateTitle": {
+    "description": "按日期的日记列表标题",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

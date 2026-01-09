@@ -38,5 +38,15 @@
   "unlock": "Unlock",
   "unlockReason": "Unlock your journal",
   "enableAppLockReason": "Enable app lock",
-  "disableAppLockReason": "Disable app lock"
+  "disableAppLockReason": "Disable app lock",
+  "calendarTitle": "Calendar",
+  "entriesOnDateTitle": "Entries on {date}",
+  "@entriesOnDateTitle": {
+    "description": "Title for a day-based entries list",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -125,4 +125,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get disableAppLockReason => '关闭应用锁';
+
+  @override
+  String get calendarTitle => '日历';
+
+  @override
+  String entriesOnDateTitle(String date) {
+    return '$date 的日记';
+  }
 }

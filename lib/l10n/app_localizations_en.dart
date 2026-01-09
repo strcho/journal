@@ -128,4 +128,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disableAppLockReason => 'Disable app lock';
+
+  @override
+  String get calendarTitle => 'Calendar';
+
+  @override
+  String entriesOnDateTitle(String date) {
+    return 'Entries on $date';
+  }
 }

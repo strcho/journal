@@ -331,6 +331,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disable app lock'**
   String get disableAppLockReason;
+
+  /// No description provided for @calendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendarTitle;
+
+  /// Title for a day-based entries list
+  ///
+  /// In en, this message translates to:
+  /// **'Entries on {date}'**
+  String entriesOnDateTitle(String date);
 }
 
 class _AppLocalizationsDelegate

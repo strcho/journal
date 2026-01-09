@@ -13,7 +13,7 @@ class AppLockService {
   final LocalAuthentication _auth;
   final ValueNotifier<bool> enabled = ValueNotifier<bool>(false);
   final ValueNotifier<Duration> timeout =
-      ValueNotifier<Duration>(Duration.zero);
+      ValueNotifier<Duration>(const Duration(minutes: 5));
 
   static Future<AppLockService> create() async {
     final service = AppLockService._(LocalAuthentication());
@@ -45,9 +45,13 @@ class AppLockService {
   }
 
   Future<bool> canAuthenticate() async {
-    final isSupported = await _auth.isDeviceSupported();
-    final canCheck = await _auth.canCheckBiometrics;
-    return isSupported || canCheck;
+    try {
+      final isSupported = await _auth.isDeviceSupported();
+      final canCheck = await _auth.canCheckBiometrics;
+      return isSupported || canCheck;
+    } on PlatformException {
+      return false;
+    }
   }
 
   Future<bool> authenticate({required String reason}) async {

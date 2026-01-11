@@ -10,7 +10,19 @@
   "editEntryTitle": "编辑日记",
   "newEntryTitle": "新建日记",
   "entryTitleLabel": "标题",
+  "entryDateLabel": "日记日期",
+  "entryDatePickerHelp": "选择日记日期",
+  "entryDateTodayLabel": "{date}（今天）",
+  "@entryDateTodayLabel": {
+    "description": "当所选日期为今天时显示",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "insertImage": "插入图片",
+  "moreFormatting": "更多格式",
   "entryDetailTitle": "日记",
   "entryNotFound": "未找到日记。",
   "deleteEntryTitle": "删除日记？",

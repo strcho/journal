@@ -158,11 +158,35 @@ abstract class AppLocalizations {
   /// **'Title'**
   String get entryTitleLabel;
 
+  /// No description provided for @entryDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry date'**
+  String get entryDateLabel;
+
+  /// No description provided for @entryDatePickerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Select entry date'**
+  String get entryDatePickerHelp;
+
+  /// Shown when the selected date is today
+  ///
+  /// In en, this message translates to:
+  /// **'{date} (Today)'**
+  String entryDateTodayLabel(String date);
+
   /// No description provided for @insertImage.
   ///
   /// In en, this message translates to:
   /// **'Insert image'**
   String get insertImage;
+
+  /// No description provided for @moreFormatting.
+  ///
+  /// In en, this message translates to:
+  /// **'More formatting'**
+  String get moreFormatting;
 
   /// No description provided for @entryDetailTitle.
   ///

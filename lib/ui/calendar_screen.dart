@@ -23,8 +23,17 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  late final DateTime _todayUtc;
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _todayUtc = _normalizeCalendarDay(DateTime.now());
+    _focusedDay = _todayUtc;
+    _selectedDay = _todayUtc;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +52,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
           return TableCalendar<Entry>(
             locale: l10n.localeName,
             firstDay: _firstDay(entries),
-            lastDay: DateTime.now().add(const Duration(days: 365 * 5)),
+            lastDay: _todayUtc.add(const Duration(days: 365 * 5)),
             focusedDay: _focusedDay,
+            currentDay: _todayUtc,
+            startingDayOfWeek: StartingDayOfWeek.monday,
             selectedDayPredicate: (day) =>
                 isSameDay(_selectedDay, day),
             eventLoader: (day) =>
-                events[DateUtils.dateOnly(day)] ?? const [],
+                events[_normalizeCalendarDay(day)] ?? const [],
             headerStyle: const HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
@@ -85,8 +96,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
+                _selectedDay = _normalizeCalendarDay(selectedDay);
+                _focusedDay = _normalizeCalendarDay(focusedDay);
               });
               _handleDayTap(context, selectedDay, events);
             },
@@ -99,7 +110,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Map<DateTime, List<Entry>> _groupEntriesByDay(List<Entry> entries) {
     final map = <DateTime, List<Entry>>{};
     for (final entry in entries) {
-      final day = DateUtils.dateOnly(entry.createdAt);
+      final day = _normalizeCalendarDay(entry.createdAt);
       map.putIfAbsent(day, () => []).add(entry);
     }
     return map;
@@ -107,12 +118,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   DateTime _firstDay(List<Entry> entries) {
     if (entries.isEmpty) {
-      return DateTime.now().subtract(const Duration(days: 365));
+      final now = DateTime.now();
+      return DateTime.utc(now.year, now.month, now.day)
+          .subtract(const Duration(days: 365));
     }
     final earliest = entries
         .map((entry) => entry.createdAt)
         .reduce((a, b) => a.isBefore(b) ? a : b);
-    return DateUtils.dateOnly(earliest);
+    return _normalizeCalendarDay(earliest);
   }
 
   void _handleDayTap(
@@ -120,8 +133,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     DateTime selectedDay,
     Map<DateTime, List<Entry>> events,
   ) {
-    final dayEntries =
-        events[DateUtils.dateOnly(selectedDay)] ?? const [];
+    final normalizedDay = _normalizeCalendarDay(selectedDay);
+    final dayEntries = events[normalizedDay] ?? const [];
     if (dayEntries.isEmpty) {
       return;
     }
@@ -146,7 +159,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (_) => EntryListScreen(
           repository: widget.repository,
           appLockService: widget.appLockService,
-          dayFilter: selectedDay,
+          dayFilter: normalizedDay,
           titleOverride: l10n.entriesOnDateTitle(dateLabel),
           showSearch: false,
           showSettingsAction: false,
@@ -154,5 +167,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  DateTime _normalizeCalendarDay(DateTime date) {
+    // TableCalendar normalizes all dates to UTC; mirror that for our lookup keys.
+    return DateTime.utc(date.year, date.month, date.day);
   }
 }

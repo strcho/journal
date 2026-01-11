@@ -39,7 +39,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entryTitleLabel => 'Title';
 
   @override
+  String get entryDateLabel => 'Entry date';
+
+  @override
+  String get entryDatePickerHelp => 'Select entry date';
+
+  @override
+  String entryDateTodayLabel(String date) {
+    return '$date (Today)';
+  }
+
+  @override
   String get insertImage => 'Insert image';
+
+  @override
+  String get moreFormatting => 'More formatting';
 
   @override
   String get entryDetailTitle => 'Entry';

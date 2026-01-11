@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
@@ -10,6 +11,7 @@ import '../data/entry.dart';
 import '../data/entry_repository.dart';
 import '../utils/attachment_embed.dart';
 import '../utils/quill_document.dart';
+import 'entry_rich_text_toolbar.dart';
 import 'quill_image_embed_builder.dart';
 
 class EntryEditorScreen extends StatefulWidget {
@@ -31,6 +33,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
   late final Future<Entry> _entryFuture;
   QuillController? _quillController;
   Entry? _entry;
+  DateTime? _selectedDate;
   bool _isSaving = false;
 
   @override
@@ -72,6 +75,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
 
     _entry = entry;
     _titleController.text = entry.title;
+    _selectedDate ??= DateUtils.dateOnly(entry.createdAt);
     final document = quillDocumentFromJson(entry.contentDeltaJson);
     _quillController = QuillController(
       document: document,
@@ -122,17 +126,23 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                   textInputAction: TextInputAction.next,
                 ),
               ),
-              QuillSimpleToolbar(
-                controller: controller,
-                config: QuillSimpleToolbarConfig(
-                  customButtons: [
-                    QuillToolbarCustomButtonOptions(
-                      icon: const Icon(Icons.image_outlined),
-                      tooltip: l10n.insertImage,
-                      onPressed: _insertImages,
-                    ),
-                  ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: ListTile(
+                    leading: const Icon(Icons.event_outlined),
+                    title: Text(l10n.entryDateLabel),
+                    subtitle: Text(_formatSelectedDate(context, l10n)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: _isSaving ? null : _pickDate,
+                  ),
                 ),
+              ),
+              EntryRichTextToolbar(
+                controller: controller,
+                l10n: l10n,
+                onInsertImages: _insertImages,
               ),
               Expanded(
                 child: QuillEditor.basic(
@@ -204,7 +214,8 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
   Future<void> _saveEntry() async {
     final entry = _entry;
     final controller = _quillController;
-    if (entry == null || controller == null) {
+    final selectedDate = _selectedDate;
+    if (entry == null || controller == null || selectedDate == null) {
       return;
     }
 
@@ -221,7 +232,17 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
       ..title = title
       ..contentDeltaJson = deltaJson
       ..plainText = plainText
-      ..attachmentIds = attachments;
+      ..attachmentIds = attachments
+      ..createdAt = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        entry.createdAt.hour,
+        entry.createdAt.minute,
+        entry.createdAt.second,
+        entry.createdAt.millisecond,
+        entry.createdAt.microsecond,
+      );
 
     await widget.repository.saveEntry(entry);
     if (mounted) {
@@ -255,9 +276,38 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
   ) async {
     final currentSet = current.toSet();
     for (final attachmentId in existing) {
-      if (!currentSet.contains(attachmentId)) {
+        if (!currentSet.contains(attachmentId)) {
         await widget.repository.deleteAttachment(attachmentId);
       }
+    }
+  }
+
+  String _formatSelectedDate(BuildContext context, AppLocalizations l10n) {
+    final selected = _selectedDate ?? DateTime.now();
+    final formatter = DateFormat.yMMMd(l10n.localeName);
+    final label = formatter.format(selected);
+    if (DateUtils.isSameDay(selected, DateTime.now())) {
+      return l10n.entryDateTodayLabel(label);
+    }
+    return label;
+  }
+
+  Future<void> _pickDate() async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? now,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 5),
+      helpText: l10n.entryDatePickerHelp,
+      cancelText: l10n.cancel,
+      confirmText: l10n.ok,
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = DateUtils.dateOnly(picked);
+      });
     }
   }
 }

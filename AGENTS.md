@@ -32,3 +32,6 @@
 ## Security & Configuration Tips
 - Avoid committing secrets; prefer `--dart-define` or platform-specific secret storage.
 - `android/local.properties` is machine-specific; adjust locally as needed without relying on it for shared config.
+
+## Agent Response Rules
+- 使用中文总结修改和计划。

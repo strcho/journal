@@ -10,7 +10,19 @@
   "editEntryTitle": "Edit entry",
   "newEntryTitle": "New entry",
   "entryTitleLabel": "Title",
+  "entryDateLabel": "Entry date",
+  "entryDatePickerHelp": "Select entry date",
+  "entryDateTodayLabel": "{date} (Today)",
+  "@entryDateTodayLabel": {
+    "description": "Shown when the selected date is today",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "insertImage": "Insert image",
+  "moreFormatting": "More formatting",
   "entryDetailTitle": "Entry",
   "entryNotFound": "Entry not found.",
   "deleteEntryTitle": "Delete entry?",

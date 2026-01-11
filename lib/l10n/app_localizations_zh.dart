@@ -39,7 +39,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get entryTitleLabel => '标题';
 
   @override
+  String get entryDateLabel => '日记日期';
+
+  @override
+  String get entryDatePickerHelp => '选择日记日期';
+
+  @override
+  String entryDateTodayLabel(String date) {
+    return '$date（今天）';
+  }
+
+  @override
   String get insertImage => '插入图片';
+
+  @override
+  String get moreFormatting => '更多格式';
 
   @override
   String get entryDetailTitle => '日记';

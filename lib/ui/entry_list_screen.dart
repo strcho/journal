@@ -151,13 +151,8 @@ class _EntryListScreenState extends State<EntryListScreen> {
                   ? l10n.untitled
                   : entry.title.trim();
               final preview = entry.plainText.trim().replaceAll('\n', ' ');
+              final trailingDate = dateFormat.format(entry.updatedAt);
               return ListTile(
-                leading: entry.attachmentIds.isEmpty
-                    ? null
-                    : _EntryThumbnail(
-                        attachmentId: entry.attachmentIds.first,
-                        repository: widget.repository,
-                      ),
                 title: Text(title),
                 subtitle: preview.isEmpty
                     ? Text(l10n.noContent)
@@ -166,9 +161,22 @@ class _EntryListScreenState extends State<EntryListScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                trailing: Text(
-                  dateFormat.format(entry.updatedAt),
-                  style: Theme.of(context).textTheme.bodySmall,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      trailingDate,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (entry.attachmentIds.isNotEmpty) ...[
+                      const SizedBox(width: 12),
+                      _EntryThumbnail(
+                        attachmentId: entry.attachmentIds.first,
+                        repository: widget.repository,
+                      ),
+                    ],
+                  ],
                 ),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(

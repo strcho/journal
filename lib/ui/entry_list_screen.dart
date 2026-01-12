@@ -50,7 +50,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final localeName = l10n.localeName;
-    final dateFormat = DateFormat.yMMMd(localeName);
+    final timeFormat = DateFormat.Hm(localeName);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titleOverride ?? l10n.appTitle),
@@ -141,51 +141,69 @@ class _EntryListScreenState extends State<EntryListScreen> {
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: entries.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
+          final rows = _buildRows(entries);
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            itemCount: rows.length,
             itemBuilder: (context, index) {
-              final entry = entries[index];
+              final row = rows[index];
+              if (row.headerDay != null) {
+                return _DateHeader(
+                  day: row.headerDay!,
+                  l10n: l10n,
+                );
+              }
+
+              final entry = row.entry!;
               final title = entry.title.trim().isEmpty
                   ? l10n.untitled
                   : entry.title.trim();
               final preview = entry.plainText.trim().replaceAll('\n', ' ');
-              final trailingDate = dateFormat.format(entry.createdAt);
-              return ListTile(
-                title: Text(title),
-                subtitle: preview.isEmpty
-                    ? Text(l10n.noContent)
-                    : Text(
-                        preview,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      trailingDate,
-                      style: Theme.of(context).textTheme.bodySmall,
+              final trailingTime = timeFormat.format(entry.createdAt);
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    dense: true,
+                    title: Text(title),
+                    subtitle: preview.isEmpty
+                        ? Text(l10n.noContent)
+                        : Text(
+                            preview,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          trailingTime,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        if (entry.attachmentIds.isNotEmpty) ...[
+                          const SizedBox(width: 12),
+                          _EntryThumbnail(
+                            attachmentId: entry.attachmentIds.first,
+                            repository: widget.repository,
+                          ),
+                        ],
+                      ],
                     ),
-                    if (entry.attachmentIds.isNotEmpty) ...[
-                      const SizedBox(width: 12),
-                      _EntryThumbnail(
-                        attachmentId: entry.attachmentIds.first,
-                        repository: widget.repository,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => EntryDetailScreen(
+                          repository: widget.repository,
+                          entryId: entry.id,
+                        ),
                       ),
-                    ],
-                  ],
-                ),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => EntryDetailScreen(
-                      repository: widget.repository,
-                      entryId: entry.id,
                     ),
                   ),
-                ),
+                  if (index != rows.length - 1 &&
+                      rows[index + 1].entry != null)
+                    const Divider(height: 1),
+                ],
               );
             },
           );
@@ -214,6 +232,72 @@ class _EntryListScreenState extends State<EntryListScreen> {
     return entries
         .where((entry) => DateUtils.isSameDay(entry.createdAt, dayFilter))
         .toList();
+  }
+
+  List<_EntryListRow> _buildRows(List<Entry> entries) {
+    final rows = <_EntryListRow>[];
+    DateTime? currentDay;
+    for (final entry in entries) {
+      final day = DateUtils.dateOnly(entry.createdAt);
+      if (currentDay == null || !DateUtils.isSameDay(currentDay, day)) {
+        currentDay = day;
+        rows.add(_EntryListRow.header(day));
+      }
+      rows.add(_EntryListRow.entry(entry));
+    }
+    return rows;
+  }
+}
+
+class _EntryListRow {
+  const _EntryListRow._({this.headerDay, this.entry});
+
+  factory _EntryListRow.header(DateTime day) =>
+      _EntryListRow._(headerDay: day);
+
+  factory _EntryListRow.entry(Entry entry) => _EntryListRow._(entry: entry);
+
+  final DateTime? headerDay;
+  final Entry? entry;
+}
+
+class _DateHeader extends StatelessWidget {
+  const _DateHeader({
+    required this.day,
+    required this.l10n,
+  });
+
+  final DateTime day;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final formatter = DateFormat.yMMMMd(l10n.localeName);
+    final label = formatter.format(day);
+    final text = DateUtils.isSameDay(day, DateTime.now())
+        ? l10n.entryDateTodayLabel(label)
+        : label;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Divider(
+              height: 1,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

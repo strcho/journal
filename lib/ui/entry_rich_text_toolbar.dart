@@ -8,16 +8,18 @@ class EntryRichTextToolbar extends StatelessWidget {
     required this.controller,
     required this.l10n,
     required this.onInsertImages,
+    this.backgroundColor,
   });
 
   final QuillController controller;
   final AppLocalizations l10n;
   final VoidCallback onInsertImages;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Theme.of(context).colorScheme.surface,
+      color: backgroundColor ?? Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
           Expanded(

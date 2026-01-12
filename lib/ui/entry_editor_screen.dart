@@ -113,48 +113,104 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    hintText: l10n.entryTitleLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                  textInputAction: TextInputAction.next,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  child: ListTile(
-                    leading: const Icon(Icons.event_outlined),
-                    title: Text(l10n.entryDateLabel),
-                    subtitle: Text(_formatSelectedDate(context, l10n)),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: _isSaving ? null : _pickDate,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  child: TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      hintText: l10n.entryTitleLabel,
+                      prefixIcon: const Icon(Icons.title_outlined),
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
-              ),
-              EntryRichTextToolbar(
-                controller: controller,
-                l10n: l10n,
-                onInsertImages: _insertImages,
-              ),
-              Expanded(
-                child: QuillEditor.basic(
-                  controller: controller,
-                  config: QuillEditorConfig(
-                    embedBuilders: [
-                      EncryptedImageEmbedBuilder(widget.repository),
-                    ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color:
+                              Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: QuillEditor.basic(
+                            controller: controller,
+                            config: QuillEditorConfig(
+                              embedBuilders: [
+                                EncryptedImageEmbedBuilder(widget.repository),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
+              ],
+            ),
+          ),
+          bottomNavigationBar: AnimatedPadding(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: SafeArea(
+              top: false,
+              child: Material(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _isSaving ? null : _pickDate,
+                              icon: const Icon(Icons.event_outlined),
+                              label: Text(_formatSelectedDate(context, l10n)),
+                              style: OutlinedButton.styleFrom(
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                shape: const StadiumBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    EntryRichTextToolbar(
+                      controller: controller,
+                      l10n: l10n,
+                      onInsertImages: _insertImages,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainer,
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         );
       },
@@ -233,7 +289,16 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
       ..contentDeltaJson = deltaJson
       ..plainText = plainText
       ..attachmentIds = attachments
-      ..createdAt = selectedDate;
+      ..createdAt = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        entry.createdAt.hour,
+        entry.createdAt.minute,
+        entry.createdAt.second,
+        entry.createdAt.millisecond,
+        entry.createdAt.microsecond,
+      );
 
     await widget.repository.saveEntry(entry);
     if (mounted) {
@@ -267,7 +332,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
   ) async {
     final currentSet = current.toSet();
     for (final attachmentId in existing) {
-        if (!currentSet.contains(attachmentId)) {
+      if (!currentSet.contains(attachmentId)) {
         await widget.repository.deleteAttachment(attachmentId);
       }
     }

@@ -51,6 +51,7 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
 
         final l10n = AppLocalizations.of(context)!;
         final dateLabel = DateFormat.yMMMd(l10n.localeName)
+            .add_Hm()
             .format(entry.createdAt);
 
         return Scaffold(

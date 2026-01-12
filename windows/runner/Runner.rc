@@ -88,17 +88,17 @@ BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904e4"
-        BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "my_day_one" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "my_day_one" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "my_day_one.exe" "\0"
-            VALUE "ProductName", "my_day_one" "\0"
-            VALUE "ProductVersion", VERSION_AS_STRING "\0"
-        END
-    END
+	        BEGIN
+	            VALUE "CompanyName", "com.example" "\0"
+	            VALUE "FileDescription", "DayOne" "\0"
+	            VALUE "FileVersion", VERSION_AS_STRING "\0"
+	            VALUE "InternalName", "DayOne" "\0"
+	            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
+	            VALUE "OriginalFilename", "DayOne.exe" "\0"
+	            VALUE "ProductName", "DayOne" "\0"
+	            VALUE "ProductVersion", VERSION_AS_STRING "\0"
+	        END
+	    END
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation", 0x409, 1252

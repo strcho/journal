@@ -1,6 +1,6 @@
 {
-    "name": "my_day_one",
-    "short_name": "my_day_one",
+    "name": "DayOne",
+    "short_name": "DayOne",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

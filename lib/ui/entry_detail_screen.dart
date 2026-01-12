@@ -9,7 +9,7 @@ import '../utils/quill_document.dart';
 import 'entry_editor_screen.dart';
 import 'quill_image_embed_builder.dart';
 
-class EntryDetailScreen extends StatelessWidget {
+class EntryDetailScreen extends StatefulWidget {
   const EntryDetailScreen({
     super.key,
     required this.repository,
@@ -20,10 +20,27 @@ class EntryDetailScreen extends StatelessWidget {
   final int entryId;
 
   @override
+  State<EntryDetailScreen> createState() => _EntryDetailScreenState();
+}
+
+class _EntryDetailScreenState extends State<EntryDetailScreen> {
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<Entry?>(
-      stream: repository.watchEntry(entryId),
+      stream: widget.repository.watchEntry(widget.entryId),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Scaffold(
+            body: Center(child: Text('Failed to load entry.')),
+          );
+        }
+
         final entry = snapshot.data;
         if (entry == null || entry.deletedAt != null) {
           final l10n = AppLocalizations.of(context)!;
@@ -32,16 +49,9 @@ class EntryDetailScreen extends StatelessWidget {
           );
         }
 
-        final controller = QuillController(
-          document: quillDocumentFromJson(entry.contentDeltaJson),
-          selection: const TextSelection.collapsed(offset: 0),
-        );
-        controller.readOnly = true;
-
         final l10n = AppLocalizations.of(context)!;
         final dateLabel = DateFormat.yMMMd(l10n.localeName)
-            .add_Hm()
-            .format(entry.updatedAt);
+            .format(entry.createdAt);
 
         return Scaffold(
           appBar: AppBar(
@@ -52,7 +62,7 @@ class EntryDetailScreen extends StatelessWidget {
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => EntryEditorScreen(
-                      repository: repository,
+                      repository: widget.repository,
                       entryId: entry.id,
                     ),
                   ),
@@ -79,13 +89,9 @@ class EntryDetailScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 16),
-              QuillEditor.basic(
-                controller: controller,
-                config: QuillEditorConfig(
-                  embedBuilders: [
-                    EncryptedImageEmbedBuilder(repository),
-                  ],
-                ),
+              _EntryContent(
+                repository: widget.repository,
+                contentDeltaJson: entry.contentDeltaJson,
               ),
             ],
           ),
@@ -117,10 +123,108 @@ class EntryDetailScreen extends StatelessWidget {
     );
 
     if (result == true) {
-      await repository.softDeleteEntry(entry);
+      await widget.repository.softDeleteEntry(entry);
       if (context.mounted) {
         Navigator.of(context).pop();
       }
     }
+  }
+}
+
+class _EntryContent extends StatefulWidget {
+  const _EntryContent({
+    required this.repository,
+    required this.contentDeltaJson,
+  });
+
+  final EntryRepository repository;
+  final String contentDeltaJson;
+
+  @override
+  State<_EntryContent> createState() => _EntryContentState();
+}
+
+class _EntryContentState extends State<_EntryContent> {
+  QuillController? _controller;
+  Object? _loadError;
+  bool _isLoading = true;
+  late String _lastContentDeltaJson;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastContentDeltaJson = widget.contentDeltaJson;
+    _loadController(widget.contentDeltaJson);
+  }
+
+  @override
+  void didUpdateWidget(covariant _EntryContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.contentDeltaJson != _lastContentDeltaJson) {
+      _lastContentDeltaJson = widget.contentDeltaJson;
+      _loadController(widget.contentDeltaJson);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadController(String contentDeltaJson) async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+
+    try {
+      final document = await quillDocumentFromJsonAsync(contentDeltaJson);
+      if (!mounted) {
+        return;
+      }
+      final controller = QuillController(
+        document: document,
+        selection: const TextSelection.collapsed(offset: 0),
+      )..readOnly = true;
+      _controller?.dispose();
+      setState(() {
+        _controller = controller;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _controller?.dispose();
+        _controller = null;
+        _loadError = error;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+
+    if (_loadError != null || _controller == null) {
+      return Text(
+        AppLocalizations.of(context)!.noContent,
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+    }
+
+    return QuillEditor.basic(
+      controller: _controller!,
+      config: QuillEditorConfig(
+        embedBuilders: [
+          EncryptedImageEmbedBuilder(widget.repository),
+        ],
+      ),
+    );
   }
 }

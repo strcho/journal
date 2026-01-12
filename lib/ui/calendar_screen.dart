@@ -48,16 +48,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (context, snapshot) {
           final entries = snapshot.data ?? [];
           final events = _groupEntriesByDay(entries);
+          final firstDay = _firstDay(entries);
+          final lastDay = _lastDay();
+          final clampedFocusedDay = _clampDay(_focusedDay, firstDay, lastDay);
+          final clampedSelectedDay = _clampDay(_selectedDay, firstDay, lastDay);
 
           return TableCalendar<Entry>(
+            key: ValueKey(
+              '${firstDay.toIso8601String()}-${lastDay.toIso8601String()}',
+            ),
             locale: l10n.localeName,
-            firstDay: _firstDay(entries),
-            lastDay: _todayUtc.add(const Duration(days: 365 * 5)),
-            focusedDay: _focusedDay,
+            firstDay: firstDay,
+            lastDay: lastDay,
+            focusedDay: clampedFocusedDay,
             currentDay: _todayUtc,
             startingDayOfWeek: StartingDayOfWeek.monday,
             selectedDayPredicate: (day) =>
-                isSameDay(_selectedDay, day),
+                isSameDay(clampedSelectedDay, day),
             eventLoader: (day) =>
                 events[_normalizeCalendarDay(day)] ?? const [],
             headerStyle: const HeaderStyle(
@@ -167,6 +174,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  DateTime _clampDay(DateTime day, DateTime first, DateTime last) {
+    if (day.isBefore(first)) {
+      return first;
+    }
+    if (day.isAfter(last)) {
+      return last;
+    }
+    return day;
+  }
+
+  DateTime _lastDay() {
+    return _todayUtc.add(const Duration(days: 365 * 5));
   }
 
   DateTime _normalizeCalendarDay(DateTime date) {

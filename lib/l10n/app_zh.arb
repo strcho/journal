@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appTitle": "我的日记",
+  "appTitle": "DayOne",
   "searchEntriesHint": "搜索日记",
   "noEntriesTitle": "还没有日记",
   "noEntriesBody": "点击 + 开始记录第一篇日记。",

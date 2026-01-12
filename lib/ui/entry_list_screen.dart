@@ -50,7 +50,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final localeName = l10n.localeName;
-    final dateFormat = DateFormat.yMMMd(localeName).add_Hm();
+    final dateFormat = DateFormat.yMMMd(localeName);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titleOverride ?? l10n.appTitle),
@@ -151,7 +151,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
                   ? l10n.untitled
                   : entry.title.trim();
               final preview = entry.plainText.trim().replaceAll('\n', ' ');
-              final trailingDate = dateFormat.format(entry.updatedAt);
+              final trailingDate = dateFormat.format(entry.createdAt);
               return ListTile(
                 title: Text(title),
                 subtitle: preview.isEmpty

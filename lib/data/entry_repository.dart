@@ -38,7 +38,7 @@ class EntryRepository {
     final baseStream = _isar.entrys
         .filter()
         .deletedAtIsNull()
-        .sortByUpdatedAtDesc()
+        .sortByCreatedAtDesc()
         .watch(fireImmediately: true);
     return baseStream.asyncMap((entries) async {
       final hydrated = await Future.wait(entries.map(_hydrateEntry));
@@ -59,7 +59,11 @@ class EntryRepository {
   Stream<Entry?> watchEntry(Id id) {
     return _isar.entrys
         .watchObject(id, fireImmediately: true)
-        .asyncMap((entry) async => entry == null ? null : _hydrateEntry(entry));
+        .asyncMap(
+          (entry) async => entry == null
+              ? null
+              : _hydrateEntry(entry, offloadJsonDecode: true),
+        );
   }
 
   Future<Entry?> getEntry(Id id) async {
@@ -67,7 +71,7 @@ class EntryRepository {
     if (entry == null) {
       return null;
     }
-    return _hydrateEntry(entry);
+    return _hydrateEntry(entry, offloadJsonDecode: true);
   }
 
   Future<void> saveEntry(Entry entry) async {
@@ -339,7 +343,10 @@ class EntryRepository {
     return listEquals(a, b);
   }
 
-  Future<Entry> _hydrateEntry(Entry entry) async {
+  Future<Entry> _hydrateEntry(
+    Entry entry, {
+    bool offloadJsonDecode = false,
+  }) async {
     if (entry.payloadEncrypted.isEmpty) {
       entry
         ..title = ''
@@ -352,7 +359,10 @@ class EntryRepository {
       final decrypted = await _cryptoService.decryptString(
         entry.payloadEncrypted,
       );
-      final map = jsonDecode(decrypted) as Map<String, dynamic>;
+      final map = await _decodeJsonMap(
+        decrypted,
+        offload: offloadJsonDecode,
+      );
       final payload = EntryPayload.fromJson(map);
       entry
         ..title = payload.title
@@ -371,6 +381,22 @@ class EntryRepository {
 
     return entry;
   }
+}
+
+Future<Map<String, dynamic>> _decodeJsonMap(
+  String json, {
+  required bool offload,
+}) async {
+  // Avoid isolate overhead for smaller payloads.
+  const offloadThresholdChars = 20000;
+  if (!offload || json.length < offloadThresholdChars) {
+    return jsonDecode(json) as Map<String, dynamic>;
+  }
+  return compute(_jsonDecodeToMap, json);
+}
+
+Map<String, dynamic> _jsonDecodeToMap(String json) {
+  return jsonDecode(json) as Map<String, dynamic>;
 }
 
 class _LegacyDeltaUpdate {

@@ -233,16 +233,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
       ..contentDeltaJson = deltaJson
       ..plainText = plainText
       ..attachmentIds = attachments
-      ..createdAt = DateTime(
-        selectedDate.year,
-        selectedDate.month,
-        selectedDate.day,
-        entry.createdAt.hour,
-        entry.createdAt.minute,
-        entry.createdAt.second,
-        entry.createdAt.millisecond,
-        entry.createdAt.microsecond,
-      );
+      ..createdAt = selectedDate;
 
     await widget.repository.saveEntry(entry);
     if (mounted) {

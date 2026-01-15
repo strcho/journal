@@ -2,10 +2,8 @@ import 'auth_token_store.dart';
 import 'journal_api_client.dart';
 
 class AuthSession {
-  AuthSession({
-    required this.client,
-    AuthTokenStore? tokenStore,
-  }) : tokenStore = tokenStore ?? const AuthTokenStore();
+  AuthSession({required this.client, AuthTokenStore? tokenStore})
+    : tokenStore = tokenStore ?? const AuthTokenStore();
 
   final JournalApiClient client;
   final AuthTokenStore tokenStore;

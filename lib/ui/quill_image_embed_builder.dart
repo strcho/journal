@@ -31,10 +31,7 @@ class EncryptedImageEmbedBuilder extends EmbedBuilder {
           if (bytes == null || bytes.isEmpty) {
             return _buildPlaceholder(context);
           }
-          return _wrapImage(
-            context,
-            Image.memory(bytes, fit: BoxFit.cover),
-          );
+          return _wrapImage(context, Image.memory(bytes, fit: BoxFit.cover));
         },
       );
     }
@@ -48,10 +45,7 @@ class EncryptedImageEmbedBuilder extends EmbedBuilder {
           if (bytes == null || bytes.isEmpty) {
             return _buildPlaceholder(context);
           }
-          return _wrapImage(
-            context,
-            Image.memory(bytes, fit: BoxFit.cover),
-          );
+          return _wrapImage(context, Image.memory(bytes, fit: BoxFit.cover));
         },
       );
     }
@@ -64,10 +58,7 @@ class EncryptedImageEmbedBuilder extends EmbedBuilder {
           if (bytes == null || bytes.isEmpty) {
             return _buildPlaceholder(context);
           }
-          return _wrapImage(
-            context,
-            Image.memory(bytes, fit: BoxFit.cover),
-          );
+          return _wrapImage(context, Image.memory(bytes, fit: BoxFit.cover));
         },
       );
     }

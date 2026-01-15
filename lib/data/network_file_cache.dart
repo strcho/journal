@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 class NetworkFileCache {
   NetworkFileCache({HttpClient? httpClient})
-      : _httpClient = httpClient ?? HttpClient();
+    : _httpClient = httpClient ?? HttpClient();
 
   final HttpClient _httpClient;
   Directory? _cachedDirectory;

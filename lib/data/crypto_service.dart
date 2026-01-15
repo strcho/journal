@@ -18,10 +18,7 @@ class CryptoService {
 
   static Future<CryptoService> create() async {
     final keyBytes = await _getOrCreateKeyBytes();
-    return CryptoService(
-      SecretKey(keyBytes),
-      AesGcm.with256bits(),
-    );
+    return CryptoService(SecretKey(keyBytes), AesGcm.with256bits());
   }
 
   static Future<Uint8List> _getOrCreateKeyBytes() async {
@@ -65,10 +62,7 @@ class CryptoService {
     if (bytes.isEmpty) {
       return Uint8List(0);
     }
-    final secretBox = await _algorithm.encrypt(
-      bytes,
-      secretKey: _secretKey,
-    );
+    final secretBox = await _algorithm.encrypt(bytes, secretKey: _secretKey);
     return _combineSecretBox(secretBox);
   }
 

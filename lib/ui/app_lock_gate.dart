@@ -17,8 +17,7 @@ class AppLockGate extends StatefulWidget {
   State<AppLockGate> createState() => _AppLockGateState();
 }
 
-class _AppLockGateState extends State<AppLockGate>
-    with WidgetsBindingObserver {
+class _AppLockGateState extends State<AppLockGate> with WidgetsBindingObserver {
   bool _locked = false;
   bool _needsAuth = false;
   bool _authInProgress = false;

@@ -40,9 +40,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.calendarTitle),
-      ),
+      appBar: AppBar(title: Text(l10n.calendarTitle)),
       body: StreamBuilder<List<Entry>>(
         stream: widget.repository.watchEntries(),
         builder: (context, snapshot) {
@@ -63,8 +61,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             focusedDay: clampedFocusedDay,
             currentDay: _todayUtc,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            selectedDayPredicate: (day) =>
-                isSameDay(clampedSelectedDay, day),
+            selectedDayPredicate: (day) => isSameDay(clampedSelectedDay, day),
             eventLoader: (day) =>
                 events[_normalizeCalendarDay(day)] ?? const [],
             headerStyle: const HeaderStyle(
@@ -126,8 +123,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _firstDay(List<Entry> entries) {
     if (entries.isEmpty) {
       final now = DateTime.now();
-      return DateTime.utc(now.year, now.month, now.day)
-          .subtract(const Duration(days: 365));
+      return DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(const Duration(days: 365));
     }
     final earliest = entries
         .map((entry) => entry.createdAt)
@@ -158,9 +158,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final dateLabel = MaterialLocalizations.of(context).formatFullDate(
-      selectedDay,
-    );
+    final dateLabel = MaterialLocalizations.of(
+      context,
+    ).formatFullDate(selectedDay);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => EntryListScreen(

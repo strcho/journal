@@ -148,10 +148,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
             itemBuilder: (context, index) {
               final row = rows[index];
               if (row.headerDay != null) {
-                return _DateHeader(
-                  day: row.headerDay!,
-                  l10n: l10n,
-                );
+                return _DateHeader(day: row.headerDay!, l10n: l10n);
               }
 
               final entry = row.entry!;
@@ -200,8 +197,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
                       ),
                     ),
                   ),
-                  if (index != rows.length - 1 &&
-                      rows[index + 1].entry != null)
+                  if (index != rows.length - 1 && rows[index + 1].entry != null)
                     const Divider(height: 1),
                 ],
               );
@@ -252,8 +248,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
 class _EntryListRow {
   const _EntryListRow._({this.headerDay, this.entry});
 
-  factory _EntryListRow.header(DateTime day) =>
-      _EntryListRow._(headerDay: day);
+  factory _EntryListRow.header(DateTime day) => _EntryListRow._(headerDay: day);
 
   factory _EntryListRow.entry(Entry entry) => _EntryListRow._(entry: entry);
 
@@ -262,10 +257,7 @@ class _EntryListRow {
 }
 
 class _DateHeader extends StatelessWidget {
-  const _DateHeader({
-    required this.day,
-    required this.l10n,
-  });
+  const _DateHeader({required this.day, required this.l10n});
 
   final DateTime day;
   final AppLocalizations l10n;
@@ -284,9 +276,9 @@ class _DateHeader extends StatelessWidget {
         children: [
           Text(
             text,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -302,10 +294,7 @@ class _DateHeader extends StatelessWidget {
 }
 
 class _EntryThumbnail extends StatelessWidget {
-  const _EntryThumbnail({
-    required this.attachmentId,
-    required this.repository,
-  });
+  const _EntryThumbnail({required this.attachmentId, required this.repository});
 
   final String attachmentId;
   final EntryRepository repository;
@@ -325,12 +314,7 @@ class _EntryThumbnail extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: const Icon(Icons.image_not_supported_outlined),
                 )
-              : Image.memory(
-                  bytes,
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                ),
+              : Image.memory(bytes, width: 56, height: 56, fit: BoxFit.cover),
         );
       },
     );

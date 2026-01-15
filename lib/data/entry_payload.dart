@@ -14,10 +14,10 @@ class EntryPayload {
   final List<String> tags;
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        'contentDeltaJson': contentDeltaJson,
-        'plainText': plainText,
-      };
+    'title': title,
+    'contentDeltaJson': contentDeltaJson,
+    'plainText': plainText,
+  };
 
   factory EntryPayload.fromJson(Map<String, dynamic> json) {
     return EntryPayload(
@@ -25,9 +25,8 @@ class EntryPayload {
       contentDeltaJson: json['contentDeltaJson'] as String? ?? '',
       plainText: json['plainText'] as String? ?? '',
       mood: json['mood'] as String?,
-      tags: (json['tags'] as List<dynamic>?)
-              ?.whereType<String>()
-              .toList() ??
+      tags:
+          (json['tags'] as List<dynamic>?)?.whereType<String>().toList() ??
           const <String>[],
     );
   }

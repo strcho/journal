@@ -44,15 +44,13 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
         final entry = snapshot.data;
         if (entry == null || entry.deletedAt != null) {
           final l10n = AppLocalizations.of(context)!;
-          return Scaffold(
-            body: Center(child: Text(l10n.entryNotFound)),
-          );
+          return Scaffold(body: Center(child: Text(l10n.entryNotFound)));
         }
 
         final l10n = AppLocalizations.of(context)!;
-        final dateLabel = DateFormat.yMMMd(l10n.localeName)
-            .add_Hm()
-            .format(entry.createdAt);
+        final dateLabel = DateFormat.yMMMd(
+          l10n.localeName,
+        ).add_Hm().format(entry.createdAt);
 
         return Scaffold(
           appBar: AppBar(
@@ -79,16 +77,11 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                entry.title.trim().isEmpty
-                    ? l10n.untitled
-                    : entry.title.trim(),
+                entry.title.trim().isEmpty ? l10n.untitled : entry.title.trim(),
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 4),
-              Text(
-                dateLabel,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(dateLabel, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 16),
               _EntryContent(
                 repository: widget.repository,
@@ -109,16 +102,16 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
         return AlertDialog(
           title: Text(l10n.deleteEntryTitle),
           content: Text(l10n.deleteEntryMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(l10n.delete),
-          ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.delete),
+            ),
+          ],
         );
       },
     );
@@ -222,9 +215,7 @@ class _EntryContentState extends State<_EntryContent> {
     return QuillEditor.basic(
       controller: _controller!,
       config: QuillEditorConfig(
-        embedBuilders: [
-          EncryptedImageEmbedBuilder(widget.repository),
-        ],
+        embedBuilders: [EncryptedImageEmbedBuilder(widget.repository)],
       ),
     );
   }

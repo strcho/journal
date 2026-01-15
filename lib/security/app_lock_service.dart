@@ -12,8 +12,9 @@ class AppLockService {
 
   final LocalAuthentication _auth;
   final ValueNotifier<bool> enabled = ValueNotifier<bool>(false);
-  final ValueNotifier<Duration> timeout =
-      ValueNotifier<Duration>(const Duration(minutes: 5));
+  final ValueNotifier<Duration> timeout = ValueNotifier<Duration>(
+    const Duration(minutes: 5),
+  );
 
   static Future<AppLockService> create() async {
     final service = AppLockService._(LocalAuthentication());
@@ -38,10 +39,7 @@ class AppLockService {
 
   Future<void> setTimeout(Duration value) async {
     timeout.value = value;
-    await _storage.write(
-      key: _timeoutKey,
-      value: value.inSeconds.toString(),
-    );
+    await _storage.write(key: _timeoutKey, value: value.inSeconds.toString());
   }
 
   Future<bool> canAuthenticate() async {

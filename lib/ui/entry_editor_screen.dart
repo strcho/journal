@@ -15,11 +15,7 @@ import 'entry_rich_text_toolbar.dart';
 import 'quill_image_embed_builder.dart';
 
 class EntryEditorScreen extends StatefulWidget {
-  const EntryEditorScreen({
-    super.key,
-    required this.repository,
-    this.entryId,
-  });
+  const EntryEditorScreen({super.key, required this.repository, this.entryId});
 
   final EntryRepository repository;
   final int? entryId;
@@ -103,9 +99,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-              isExisting ? l10n.editEntryTitle : l10n.newEntryTitle,
-            ),
+            title: Text(isExisting ? l10n.editEntryTitle : l10n.newEntryTitle),
             actions: [
               IconButton(
                 onPressed: _isSaving ? null : _saveEntry,
@@ -140,8 +134,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color:
-                              Theme.of(context).colorScheme.outlineVariant,
+                          color: Theme.of(context).colorScheme.outlineVariant,
                         ),
                       ),
                       child: ClipRRect(
@@ -204,8 +197,9 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
                       controller: controller,
                       l10n: l10n,
                       onInsertImages: _insertImages,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer,
                     ),
                   ],
                 ),
@@ -278,8 +272,10 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
     setState(() => _isSaving = true);
     final title = _titleController.text.trim();
     final deltaJson = jsonEncode(controller.document.toDelta().toJson());
-    final plainText =
-        controller.document.toPlainText().replaceAll('\uFFFC', '').trim();
+    final plainText = controller.document
+        .toPlainText()
+        .replaceAll('\uFFFC', '')
+        .trim();
     final attachments = _extractAttachmentIds(controller);
 
     await _deleteRemovedAttachments(entry.attachmentIds, attachments);
@@ -315,8 +311,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
       if (insert is Map && insert['image'] is String) {
         final value = insert['image'] as String;
         if (value.startsWith(attachmentEmbedPrefix)) {
-          final attachmentId =
-              value.substring(attachmentEmbedPrefix.length);
+          final attachmentId = value.substring(attachmentEmbedPrefix.length);
           if (attachmentId.isNotEmpty && seen.add(attachmentId)) {
             paths.add(attachmentId);
           }

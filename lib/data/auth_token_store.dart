@@ -3,9 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'journal_api_client.dart';
 
 class AuthTokenStore {
-  const AuthTokenStore({
-    FlutterSecureStorage? storage,
-  }) : _storage = storage ?? const FlutterSecureStorage();
+  const AuthTokenStore({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
 
   static const _accessTokenKey = 'auth_access_token';
   static const _refreshTokenKey = 'auth_refresh_token';

@@ -11,10 +11,10 @@ class IsarService {
 
   static Future<IsarService> open() async {
     final directory = await getApplicationDocumentsDirectory();
-    final isar = await Isar.open(
-      [EntrySchema, AttachmentSchema],
-      directory: directory.path,
-    );
+    final isar = await Isar.open([
+      EntrySchema,
+      AttachmentSchema,
+    ], directory: directory.path);
     return IsarService._(isar);
   }
 }

@@ -22,21 +22,17 @@ class QiniuCloudStorage implements CloudStorage {
       'QINIU_DOWNLOAD_BASE_URL',
       defaultValue: '',
     );
-    const uploadToken = String.fromEnvironment(
-      'QINIU_UPLOAD_TOKEN',
-      defaultValue: '',
-    );
 
     return QiniuCloudStorage(
       uploadUrl: uploadUrl,
       downloadBaseUrl: downloadBaseUrl,
-      uploadTokenProvider: () async => uploadToken,
+      uploadTokenProvider: (key) async => '',
     );
   }
 
   final String uploadUrl;
   final String downloadBaseUrl;
-  final Future<String> Function() uploadTokenProvider;
+  final Future<String> Function(String key) uploadTokenProvider;
   final HttpClient _httpClient;
 
   @override
@@ -52,7 +48,7 @@ class QiniuCloudStorage implements CloudStorage {
     if (!isConfigured) {
       throw StateError('QiniuCloudStorage is not configured.');
     }
-    final token = (await uploadTokenProvider()).trim();
+    final token = (await uploadTokenProvider(key)).trim();
     if (token.isEmpty) {
       throw StateError('Qiniu upload token is empty.');
     }

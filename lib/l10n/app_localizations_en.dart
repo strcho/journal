@@ -192,4 +192,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutConfirmMessage => 'This will stop syncing your journal.';
+
+  @override
+  String get entryLoadError => 'Failed to load entry.';
 }

@@ -26,6 +26,7 @@ class EntryDetailScreen extends StatefulWidget {
 class _EntryDetailScreenState extends State<EntryDetailScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<Entry?>(
       stream: widget.repository.watchEntry(widget.entryId),
       builder: (context, snapshot) {
@@ -36,18 +37,13 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
         }
 
         if (snapshot.hasError) {
-          return const Scaffold(
-            body: Center(child: Text('Failed to load entry.')),
-          );
+          return Scaffold(body: Center(child: Text(l10n.entryLoadError)));
         }
 
         final entry = snapshot.data;
         if (entry == null || entry.deletedAt != null) {
-          final l10n = AppLocalizations.of(context)!;
           return Scaffold(body: Center(child: Text(l10n.entryNotFound)));
         }
-
-        final l10n = AppLocalizations.of(context)!;
         final dateLabel = DateFormat.yMMMd(
           l10n.localeName,
         ).add_Hm().format(entry.createdAt);

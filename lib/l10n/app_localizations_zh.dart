@@ -189,4 +189,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get logoutConfirmMessage => '这将停止日记同步。';
+
+  @override
+  String get entryLoadError => '加载日记失败。';
 }

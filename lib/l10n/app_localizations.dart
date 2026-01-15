@@ -451,6 +451,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This will stop syncing your journal.'**
   String get logoutConfirmMessage;
+
+  /// No description provided for @entryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load entry.'**
+  String get entryLoadError;
 }
 
 class _AppLocalizationsDelegate

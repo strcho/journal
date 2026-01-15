@@ -57,14 +57,18 @@ class EncryptedImageEmbedBuilder extends EmbedBuilder {
     }
 
     if (value.startsWith('http://') || value.startsWith('https://')) {
-      return _wrapImage(
-        context,
-        Image.network(
-          value,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildPlaceholder(context),
-        ),
+      return FutureBuilder<Uint8List>(
+        future: repository.readNetworkBytes(value),
+        builder: (context, snapshot) {
+          final bytes = snapshot.data;
+          if (bytes == null || bytes.isEmpty) {
+            return _buildPlaceholder(context);
+          }
+          return _wrapImage(
+            context,
+            Image.memory(bytes, fit: BoxFit.cover),
+          );
+        },
       );
     }
 

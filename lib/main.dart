@@ -4,13 +4,17 @@ import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
 import 'data/entry_repository.dart';
+import 'data/journal_api_client.dart';
 import 'security/app_lock_service.dart';
 import 'ui/app_lock_gate.dart';
 import 'ui/entry_list_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final repository = await EntryRepository.open();
+  final apiClient = JournalApiClient.fromConfig();
+  final repository = await EntryRepository.open(
+    journalApiClient: apiClient,
+  );
   final appLockService = await AppLockService.create();
   runApp(MyApp(repository: repository, appLockService: appLockService));
 }

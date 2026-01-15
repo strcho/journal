@@ -13,11 +13,18 @@ class AttachmentStore {
 
   Future<String> saveBytes(String attachmentId, Uint8List bytes) async {
     final encrypted = await _cryptoService.encryptBytes(bytes);
+    return saveEncryptedBytes(attachmentId, encrypted);
+  }
+
+  Future<String> saveEncryptedBytes(
+    String attachmentId,
+    Uint8List encryptedBytes,
+  ) async {
     final directory = await _attachmentsDirectory();
     final filename = '$attachmentId.enc';
     final filePath = path.join(directory.path, filename);
     final file = File(filePath);
-    await file.writeAsBytes(encrypted, flush: true);
+    await file.writeAsBytes(encryptedBytes, flush: true);
     return filePath;
   }
 
@@ -28,6 +35,11 @@ class AttachmentStore {
     }
     final encrypted = await file.readAsBytes();
     return _cryptoService.decryptBytes(encrypted);
+  }
+
+  Future<bool> exists(String filePath) async {
+    final file = File(filePath);
+    return file.exists();
   }
 
   Future<void> delete(String filePath) async {

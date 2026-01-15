@@ -7,10 +7,8 @@ import 'attachment.dart';
 import 'entry.dart';
 
 class JournalApiClient {
-  JournalApiClient({
-    required this.baseUrl,
-    HttpClient? httpClient,
-  }) : _httpClient = httpClient ?? HttpClient();
+  JournalApiClient({required this.baseUrl, HttpClient? httpClient})
+    : _httpClient = httpClient ?? HttpClient();
 
   factory JournalApiClient.fromConfig() {
     return JournalApiClient(baseUrl: LocalConfig.journalApiBaseUrl);
@@ -23,10 +21,7 @@ class JournalApiClient {
     required String email,
     required String password,
   }) async {
-    final payload = <String, dynamic>{
-      'email': email,
-      'password': password,
-    };
+    final payload = <String, dynamic>{'email': email, 'password': password};
     final json = await _postJson('/auth/login', payload);
     return AuthTokens.fromJson(json);
   }
@@ -66,8 +61,7 @@ class JournalApiClient {
   }) async {
     final payload = <String, dynamic>{
       'entries': entries.map((entry) => entry.toJson()).toList(),
-      'attachmentsMeta':
-          attachmentsMeta.map((meta) => meta.toJson()).toList(),
+      'attachmentsMeta': attachmentsMeta.map((meta) => meta.toJson()).toList(),
     };
     final json = await _postJson(
       '/sync/push',
@@ -75,6 +69,19 @@ class JournalApiClient {
       accessToken: accessToken,
     );
     return PushResponse.fromJson(json);
+  }
+
+  Future<String> getQiniuUploadToken({
+    required String accessToken,
+    required String key,
+  }) async {
+    final query = <String, String>{'key': key};
+    final json = await _getJson(
+      '/storage/qiniu/token',
+      accessToken: accessToken,
+      query: query,
+    );
+    return json['uploadToken'] as String? ?? '';
   }
 
   Future<void> uploadAttachment({
@@ -173,20 +180,14 @@ class JournalApiClient {
   }
 
   void _applyAuth(HttpClientRequest request, String accessToken) {
-    request.headers.set(
-      HttpHeaders.authorizationHeader,
-      'Bearer $accessToken',
-    );
+    request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $accessToken');
   }
 
   Future<void> _consumeResponse(HttpClientResponse response) async {
     await _readResponseBytes(response);
   }
 
-  Map<String, dynamic> _decodeJsonObject(
-    Uint8List bytes, {
-    required Uri uri,
-  }) {
+  Map<String, dynamic> _decodeJsonObject(Uint8List bytes, {required Uri uri}) {
     if (bytes.isEmpty) {
       return <String, dynamic>{};
     }
@@ -273,7 +274,8 @@ class EntryChange {
       id: json['id'] as String? ?? '',
       payloadEncrypted: json['payloadEncrypted'] as String? ?? '',
       payloadVersion: (json['payloadVersion'] as num?)?.toInt() ?? 1,
-      attachmentIds: (json['attachmentIds'] as List<dynamic>?)
+      attachmentIds:
+          (json['attachmentIds'] as List<dynamic>?)
               ?.whereType<String>()
               .toList() ??
           const <String>[],
@@ -287,15 +289,15 @@ class EntryChange {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'payloadEncrypted': payloadEncrypted,
-        'payloadVersion': payloadVersion,
-        'attachmentIds': attachmentIds,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-        'updatedAt': updatedAt.toUtc().toIso8601String(),
-        'deletedAt': deletedAt?.toUtc().toIso8601String(),
-        'revision': revision,
-      };
+    'id': id,
+    'payloadEncrypted': payloadEncrypted,
+    'payloadVersion': payloadVersion,
+    'attachmentIds': attachmentIds,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'updatedAt': updatedAt.toUtc().toIso8601String(),
+    'deletedAt': deletedAt?.toUtc().toIso8601String(),
+    'revision': revision,
+  };
 }
 
 class AttachmentMeta {
@@ -348,15 +350,15 @@ class AttachmentMeta {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'sha256': sha256,
-        'sizeBytes': sizeBytes,
-        'mimeType': mimeType,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-        'updatedAt': updatedAt.toUtc().toIso8601String(),
-        'deletedAt': deletedAt?.toUtc().toIso8601String(),
-        'revision': revision,
-      };
+    'id': id,
+    'sha256': sha256,
+    'sizeBytes': sizeBytes,
+    'mimeType': mimeType,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'updatedAt': updatedAt.toUtc().toIso8601String(),
+    'deletedAt': deletedAt?.toUtc().toIso8601String(),
+    'revision': revision,
+  };
 }
 
 class SyncChangesResponse {
@@ -373,12 +375,14 @@ class SyncChangesResponse {
   factory SyncChangesResponse.fromJson(Map<String, dynamic> json) {
     return SyncChangesResponse(
       latestRevision: (json['latestRevision'] as num?)?.toInt() ?? 0,
-      entries: (json['entries'] as List<dynamic>?)
+      entries:
+          (json['entries'] as List<dynamic>?)
               ?.whereType<Map<String, dynamic>>()
               .map(EntryChange.fromJson)
               .toList() ??
           const <EntryChange>[],
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.whereType<Map<String, dynamic>>()
               .map(AttachmentMeta.fromJson)
               .toList() ??
@@ -400,19 +404,17 @@ class PushResponse {
 
   factory PushResponse.fromJson(Map<String, dynamic> json) {
     return PushResponse(
-      accepted: (json['accepted'] as List<dynamic>?)
-              ?.whereType<String>()
-              .toList() ??
+      accepted:
+          (json['accepted'] as List<dynamic>?)?.whereType<String>().toList() ??
           const <String>[],
-      conflicts: (json['conflicts'] as List<dynamic>?)
-              ?.whereType<String>()
-              .toList() ??
+      conflicts:
+          (json['conflicts'] as List<dynamic>?)?.whereType<String>().toList() ??
           const <String>[],
       missingAttachments:
           (json['missingAttachments'] as List<dynamic>?)
-                  ?.whereType<String>()
-                  .toList() ??
-              const <String>[],
+              ?.whereType<String>()
+              .toList() ??
+          const <String>[],
     );
   }
 }
@@ -432,13 +434,11 @@ class ApiException implements Exception {
   final String? message;
   final String? body;
 
-  static Future<ApiException> fromResponse(
-    HttpClientResponse response,
-  ) async {
+  static Future<ApiException> fromResponse(HttpClientResponse response) async {
     final bytes = await _readResponseBytesStatic(response);
     return ApiException.fromBytes(
       statusCode: response.statusCode,
-      uri: response.request?.uri ?? Uri(),
+      uri: Uri(),
       bodyBytes: bytes,
     );
   }

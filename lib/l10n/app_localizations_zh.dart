@@ -147,46 +147,4 @@ class AppLocalizationsZh extends AppLocalizations {
   String entriesOnDateTitle(String date) {
     return '$date 的日记';
   }
-
-  @override
-  String get loginTitle => '登录';
-
-  @override
-  String get emailLabel => '邮箱';
-
-  @override
-  String get emailRequired => '请输入邮箱';
-
-  @override
-  String get emailInvalid => '请输入有效的邮箱';
-
-  @override
-  String get passwordLabel => '密码';
-
-  @override
-  String get passwordRequired => '请输入密码';
-
-  @override
-  String get loginButton => '登录';
-
-  @override
-  String get loginSuccess => '登录成功';
-
-  @override
-  String get loginFailed => '登录失败，请重试。';
-
-  @override
-  String get accountSection => '账户';
-
-  @override
-  String get loginButtonTitle => '登录同步';
-
-  @override
-  String get logoutButton => '退出登录';
-
-  @override
-  String get logoutConfirmTitle => '退出登录？';
-
-  @override
-  String get logoutConfirmMessage => '这将停止日记同步。';
 }

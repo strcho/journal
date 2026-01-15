@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import 'attachment.dart';
 import 'attachment_store.dart';
+import 'auth_session.dart';
 import 'cloud_storage.dart';
 import 'crypto_service.dart';
 import 'entry.dart';
@@ -25,6 +26,7 @@ class EntryRepository {
     this._cloudStorage,
     this._journalApiClient,
     this._networkFileCache,
+    this._authSession,
   );
 
   final Isar _isar;
@@ -33,6 +35,7 @@ class EntryRepository {
   final CloudStorage _cloudStorage;
   final JournalApiClient _journalApiClient;
   final NetworkFileCache _networkFileCache;
+  final AuthSession? _authSession;
   static const _storage = FlutterSecureStorage();
   static const _legacyMigrationKey = 'migration_local_embeds_v1';
 
@@ -42,16 +45,43 @@ class EntryRepository {
     CloudStorage? cloudStorage,
     NetworkFileCache? networkFileCache,
     JournalApiClient? journalApiClient,
+    AuthSession? authSession,
   }) async {
     final service = await IsarService.open();
     final crypto = await CryptoService.create();
+    final apiClient = journalApiClient ?? JournalApiClient.fromConfig();
+
+    CloudStorage storage;
+    if (cloudStorage != null) {
+      storage = cloudStorage;
+    } else {
+      final qiniuStorage = QiniuCloudStorage.fromEnvironment();
+      if (authSession != null && qiniuStorage.isConfigured) {
+        storage = QiniuCloudStorage(
+          uploadUrl: qiniuStorage.uploadUrl,
+          downloadBaseUrl: qiniuStorage.downloadBaseUrl,
+          uploadTokenProvider: (key) async {
+            return await authSession.withAccessToken((token) async {
+              return await apiClient.getQiniuUploadToken(
+                accessToken: token,
+                key: key,
+              );
+            });
+          },
+        );
+      } else {
+        storage = qiniuStorage;
+      }
+    }
+
     final repository = EntryRepository._(
       service.isar,
       crypto,
       AttachmentStore(crypto),
-      cloudStorage ?? QiniuCloudStorage.fromEnvironment(),
-      journalApiClient ?? JournalApiClient.fromConfig(),
+      storage,
+      apiClient,
       networkFileCache ?? NetworkFileCache(),
+      authSession,
     );
     await repository._migrateLegacyLocalEmbeds();
     return repository;
@@ -129,8 +159,10 @@ class EntryRepository {
   }) async {
     final attachmentId = const Uuid().v4();
     final encrypted = await _cryptoService.encryptBytes(bytes);
-    final filePath =
-        await _attachmentStore.saveEncryptedBytes(attachmentId, encrypted);
+    final filePath = await _attachmentStore.saveEncryptedBytes(
+      attachmentId,
+      encrypted,
+    );
     final hash = await _cryptoService.sha256Hex(bytes);
     final now = DateTime.now();
     var uploadFailed = false;
@@ -333,9 +365,7 @@ class EntryRepository {
       if (insert is Map && insert['image'] is String) {
         final value = insert['image'] as String;
         if (value.startsWith(attachmentEmbedPrefix)) {
-          attachmentIds.add(
-            value.substring(attachmentEmbedPrefix.length),
-          );
+          attachmentIds.add(value.substring(attachmentEmbedPrefix.length));
           continue;
         }
 
@@ -362,11 +392,7 @@ class EntryRepository {
       return _LegacyDeltaUpdate(deltaJson, attachmentIds.toList(), false);
     }
 
-    return _LegacyDeltaUpdate(
-      jsonEncode(ops),
-      attachmentIds.toList(),
-      true,
-    );
+    return _LegacyDeltaUpdate(jsonEncode(ops), attachmentIds.toList(), true);
   }
 
   Future<String?> _getOrCreateAttachmentId(
@@ -385,8 +411,10 @@ class EntryRepository {
 
     final attachmentId = const Uuid().v4();
     final hash = await _cryptoService.sha256Hex(decrypted);
-    final newPath =
-        await _attachmentStore.moveToAttachmentId(localPath, attachmentId);
+    final newPath = await _attachmentStore.moveToAttachmentId(
+      localPath,
+      attachmentId,
+    );
     final now = DateTime.now();
     final attachment = Attachment()
       ..uuid = attachmentId
@@ -425,6 +453,160 @@ class EntryRepository {
     return listEquals(a, b);
   }
 
+  Future<SyncResult> sync() async {
+    final authSession = _authSession;
+    if (authSession == null) {
+      throw StateError('AuthSession not configured. Please login first.');
+    }
+
+    final result = SyncResult();
+    final lastSyncRev = await _loadLastSyncRevision();
+
+    final pushEntries = await _isar.entrys
+        .filter()
+        .isDirtyEqualTo(true)
+        .findAll();
+
+    final pushAttachments = await _isar.attachments
+        .filter()
+        .isDirtyEqualTo(true)
+        .findAll();
+
+    final entryChanges = pushEntries.map(EntryChange.fromEntry).toList();
+    final attachmentMetas = pushAttachments
+        .map(AttachmentMeta.fromAttachment)
+        .toList();
+
+    await authSession.withAccessToken((token) async {
+      if (entryChanges.isNotEmpty || attachmentMetas.isNotEmpty) {
+        final pushResponse = await _journalApiClient.pushChanges(
+          accessToken: token,
+          entries: entryChanges,
+          attachmentsMeta: attachmentMetas,
+        );
+
+        result.entriesPushed = pushResponse.accepted.length;
+        result.entriesConflicted = pushResponse.conflicts.length;
+        result.missingAttachments = pushResponse.missingAttachments.length;
+
+        for (final entryId in pushResponse.accepted) {
+          final entry = await _isar.entrys
+              .filter()
+              .uuidEqualTo(entryId)
+              .findFirst();
+          if (entry != null) {
+            entry.isDirty = false;
+            await _isar.writeTxn(() async {
+              await _isar.entrys.put(entry);
+            });
+          }
+        }
+
+        for (final attachmentId in pushResponse.accepted) {
+          final attachment = await _isar.attachments
+              .filter()
+              .uuidEqualTo(attachmentId)
+              .findFirst();
+          if (attachment != null) {
+            attachment.isDirty = false;
+            await _isar.writeTxn(() async {
+              await _isar.attachments.put(attachment);
+            });
+          }
+        }
+      }
+
+      final fetchResponse = await _journalApiClient.fetchChanges(
+        accessToken: token,
+        since: lastSyncRev,
+      );
+
+      result.entriesFetched = fetchResponse.entries.length;
+      result.attachmentsFetched = fetchResponse.attachments.length;
+
+      await _applyFetchedChanges(fetchResponse);
+
+      if (fetchResponse.latestRevision > lastSyncRev) {
+        await _saveLastSyncRevision(fetchResponse.latestRevision);
+      }
+    });
+
+    return result;
+  }
+
+  Future<int> _loadLastSyncRevision() async {
+    final value = await _storage.read(key: 'last_sync_revision');
+    return value != null ? int.parse(value) : 0;
+  }
+
+  Future<void> _saveLastSyncRevision(int revision) async {
+    await _storage.write(key: 'last_sync_revision', value: revision.toString());
+  }
+
+  Future<void> _applyFetchedChanges(SyncChangesResponse response) async {
+    await _isar.writeTxn(() async {
+      for (final entryChange in response.entries) {
+        final existing = await _isar.entrys
+            .filter()
+            .uuidEqualTo(entryChange.id)
+            .findFirst();
+        if (existing == null) {
+          final entry = Entry()
+            ..uuid = entryChange.id
+            ..payloadEncrypted = entryChange.payloadEncrypted
+            ..payloadVersion = entryChange.payloadVersion
+            ..attachmentIds = List<String>.from(entryChange.attachmentIds)
+            ..createdAt = entryChange.createdAt
+            ..updatedAt = entryChange.updatedAt
+            ..deletedAt = entryChange.deletedAt
+            ..serverRevision = entryChange.revision
+            ..isDirty = false;
+          await _isar.entrys.put(entry);
+        } else {
+          existing
+            ..payloadEncrypted = entryChange.payloadEncrypted
+            ..payloadVersion = entryChange.payloadVersion
+            ..attachmentIds = List<String>.from(entryChange.attachmentIds)
+            ..updatedAt = entryChange.updatedAt
+            ..deletedAt = entryChange.deletedAt
+            ..serverRevision = entryChange.revision
+            ..isDirty = false;
+          await _isar.entrys.put(existing);
+        }
+      }
+
+      for (final attachmentMeta in response.attachments) {
+        final existing = await _isar.attachments
+            .filter()
+            .uuidEqualTo(attachmentMeta.id)
+            .findFirst();
+        if (existing == null) {
+          final attachment = Attachment()
+            ..uuid = attachmentMeta.id
+            ..sha256 = attachmentMeta.sha256
+            ..sizeBytes = attachmentMeta.sizeBytes
+            ..mimeType = attachmentMeta.mimeType
+            ..createdAt = attachmentMeta.createdAt
+            ..updatedAt = attachmentMeta.updatedAt
+            ..deletedAt = attachmentMeta.deletedAt
+            ..serverRevision = attachmentMeta.revision
+            ..isDirty = false;
+          await _isar.attachments.put(attachment);
+        } else {
+          existing
+            ..sha256 = attachmentMeta.sha256
+            ..sizeBytes = attachmentMeta.sizeBytes
+            ..mimeType = attachmentMeta.mimeType
+            ..updatedAt = attachmentMeta.updatedAt
+            ..deletedAt = attachmentMeta.deletedAt
+            ..serverRevision = attachmentMeta.revision
+            ..isDirty = false;
+          await _isar.attachments.put(existing);
+        }
+      }
+    });
+  }
+
   Future<Entry> _hydrateEntry(
     Entry entry, {
     bool offloadJsonDecode = false,
@@ -441,10 +623,7 @@ class EntryRepository {
       final decrypted = await _cryptoService.decryptString(
         entry.payloadEncrypted,
       );
-      final map = await _decodeJsonMap(
-        decrypted,
-        offload: offloadJsonDecode,
-      );
+      final map = await _decodeJsonMap(decrypted, offload: offloadJsonDecode);
       final payload = EntryPayload.fromJson(map);
       entry
         ..title = payload.title
@@ -487,4 +666,14 @@ class _LegacyDeltaUpdate {
   final String deltaJson;
   final List<String> attachmentIds;
   final bool changed;
+}
+
+class SyncResult {
+  SyncResult();
+
+  int entriesPushed = 0;
+  int entriesFetched = 0;
+  int entriesConflicted = 0;
+  int attachmentsFetched = 0;
+  int missingAttachments = 0;
 }

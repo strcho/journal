@@ -60,5 +60,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "accountSection": "账户",
+  "emailLabel": "邮箱",
+  "emailRequired": "请输入邮箱",
+  "emailInvalid": "请输入有效的邮箱地址",
+  "passwordLabel": "密码",
+  "passwordRequired": "请输入密码",
+  "loginTitle": "登录",
+  "loginButton": "登录",
+  "loginButtonTitle": "登录",
+  "loginSuccess": "登录成功",
+  "logoutButton": "退出登录",
+  "logoutConfirmTitle": "退出登录？",
+  "logoutConfirmMessage": "确定要退出登录吗？",
+  "entryLoadError": "加载日记失败",
+  "loginFailed": "登录失败"
 }

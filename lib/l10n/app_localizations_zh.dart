@@ -116,8 +116,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appLockHelpTitle => '应用锁说明';
 
   @override
-  String get appLockHelpBody =>
-      '应用锁依赖设备认证。如果你在系统层关闭生物识别或密码，应用锁将无法使用。\n\n锁定时间仅在应用进入后台时生效，使用过程中不会自动锁定。';
+  String get appLockHelpBody => '应用锁依赖设备认证。如果你在系统层关闭生物识别或密码，应用锁将无法使用。\n\n锁定时间仅在应用进入后台时生效，使用过程中不会自动锁定。';
 
   @override
   String get ok => '确定';
@@ -149,7 +148,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get loginTitle => '登录';
+  String get accountSection => '账户';
 
   @override
   String get emailLabel => '邮箱';
@@ -158,7 +157,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get emailRequired => '请输入邮箱';
 
   @override
-  String get emailInvalid => '请输入有效的邮箱';
+  String get emailInvalid => '请输入有效的邮箱地址';
 
   @override
   String get passwordLabel => '密码';
@@ -167,19 +166,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get passwordRequired => '请输入密码';
 
   @override
+  String get loginTitle => '登录';
+
+  @override
   String get loginButton => '登录';
 
   @override
+  String get loginButtonTitle => '登录';
+
+  @override
   String get loginSuccess => '登录成功';
-
-  @override
-  String get loginFailed => '登录失败，请重试。';
-
-  @override
-  String get accountSection => '账户';
-
-  @override
-  String get loginButtonTitle => '登录同步';
 
   @override
   String get logoutButton => '退出登录';
@@ -188,8 +184,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get logoutConfirmTitle => '退出登录？';
 
   @override
-  String get logoutConfirmMessage => '这将停止日记同步。';
+  String get logoutConfirmMessage => '确定要退出登录吗？';
 
   @override
-  String get entryLoadError => '加载日记失败。';
+  String get entryLoadError => '加载日记失败';
+
+  @override
+  String get loginFailed => '登录失败';
 }

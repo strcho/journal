@@ -65,8 +65,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteEntryTitle => 'Delete entry?';
 
   @override
-  String get deleteEntryMessage =>
-      'This will remove the entry from your journal.';
+  String get deleteEntryMessage => 'This will remove the entry from your journal.';
 
   @override
   String get cancel => 'Cancel';
@@ -87,8 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appLockSubtitleEnabled => 'Require biometrics or device passcode';
 
   @override
-  String get appLockSubtitleUnavailable =>
-      'Device authentication is not available';
+  String get appLockSubtitleUnavailable => 'Device authentication is not available';
 
   @override
   String get lockAfterLabel => 'Lock after';
@@ -109,8 +107,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appLockTipsTitle => 'App lock tips';
 
   @override
-  String get appLockTipsBody =>
-      '- Uses device biometrics or passcode\n- Lock after only applies when the app is in background\n- Keep device security enabled for best protection';
+  String get appLockTipsBody => '- Uses device biometrics or passcode\n- Lock after only applies when the app is in background\n- Keep device security enabled for best protection';
 
   @override
   String get learnMore => 'Learn more';
@@ -119,8 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appLockHelpTitle => 'App lock help';
 
   @override
-  String get appLockHelpBody =>
-      'App lock requires device authentication. If you disable biometrics or passcode at the system level, app lock will stop working.\n\nLock after only triggers when the app is backgrounded. It does not lock while you are actively using the app.';
+  String get appLockHelpBody => 'App lock requires device authentication. If you disable biometrics or passcode at the system level, app lock will stop working.\n\nLock after only triggers when the app is backgrounded. It does not lock while you are actively using the app.';
 
   @override
   String get ok => 'OK';
@@ -152,13 +148,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get loginTitle => 'Login';
+  String get accountSection => 'Account';
 
   @override
   String get emailLabel => 'Email';
 
   @override
-  String get emailRequired => 'Please enter your email';
+  String get emailRequired => 'Email is required';
 
   @override
   String get emailInvalid => 'Please enter a valid email';
@@ -167,22 +163,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordLabel => 'Password';
 
   @override
-  String get passwordRequired => 'Please enter your password';
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get loginTitle => 'Login';
 
   @override
   String get loginButton => 'Login';
 
   @override
+  String get loginButtonTitle => 'Login';
+
+  @override
   String get loginSuccess => 'Login successful';
-
-  @override
-  String get loginFailed => 'Login failed. Please try again.';
-
-  @override
-  String get accountSection => 'Account';
-
-  @override
-  String get loginButtonTitle => 'Login to sync';
 
   @override
   String get logoutButton => 'Logout';
@@ -191,8 +184,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutConfirmTitle => 'Logout?';
 
   @override
-  String get logoutConfirmMessage => 'This will stop syncing your journal.';
+  String get logoutConfirmMessage => 'Are you sure you want to logout?';
 
   @override
-  String get entryLoadError => 'Failed to load entry.';
+  String get entryLoadError => 'Failed to load entry';
+
+  @override
+  String get loginFailed => 'Login failed';
 }

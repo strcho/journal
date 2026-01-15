@@ -60,5 +60,20 @@
         "type": "String"
       }
     }
-  }
+  },
+  "accountSection": "Account",
+  "emailLabel": "Email",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Please enter a valid email",
+  "passwordLabel": "Password",
+  "passwordRequired": "Password is required",
+  "loginTitle": "Login",
+  "loginButton": "Login",
+  "loginButtonTitle": "Login",
+  "loginSuccess": "Login successful",
+  "logoutButton": "Logout",
+  "logoutConfirmTitle": "Logout?",
+  "logoutConfirmMessage": "Are you sure you want to logout?",
+  "entryLoadError": "Failed to load entry",
+  "loginFailed": "Login failed"
 }

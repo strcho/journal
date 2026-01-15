@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_day_one/l10n/app_localizations.dart';
 
+import '../data/auth_session.dart';
+import '../data/auth_token_store.dart';
+import '../data/journal_api_client.dart';
 import '../security/app_lock_service.dart';
+import 'login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, required this.appLockService});
@@ -15,10 +19,19 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _available = false;
   bool _loading = true;
+  bool _isLoggedIn = false;
+  late final AuthSession _authSession;
+  late final AuthTokenStore _tokenStore;
   @override
   void initState() {
     super.initState();
+    _tokenStore = const AuthTokenStore();
+    _authSession = AuthSession(
+      client: JournalApiClient.fromConfig(),
+      tokenStore: _tokenStore,
+    );
     _loadAvailability();
+    _checkLoginStatus();
   }
 
   Future<void> _loadAvailability() async {
@@ -29,6 +42,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _available = available;
       _loading = false;
+    });
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final tokens = await _tokenStore.read();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _isLoggedIn = tokens != null;
     });
   }
 
@@ -47,6 +70,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    _isLoggedIn
+                        ? Icons.check_circle_outlined
+                        : Icons.person_outline,
+                    color: _isLoggedIn
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.outline,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.accountSection,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          _isLoggedIn
+                              ? l10n.loginSuccess
+                              : l10n.loginButtonTitle,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  FilledButton.tonal(
+                    onPressed: _isLoggedIn ? _logout : _login,
+                    child: Text(
+                      _isLoggedIn ? l10n.logoutButton : l10n.loginButton,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           ValueListenableBuilder<bool>(
             valueListenable: widget.appLockService.enabled,
             builder: (context, enabled, _) {
@@ -56,8 +126,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _loading
                       ? l10n.appLockSubtitleChecking
                       : _available
-                          ? l10n.appLockSubtitleEnabled
-                          : l10n.appLockSubtitleUnavailable,
+                      ? l10n.appLockSubtitleEnabled
+                      : l10n.appLockSubtitleUnavailable,
                 ),
                 value: enabled,
                 onChanged: _loading || !_available ? null : _toggleLock,
@@ -174,14 +244,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return AlertDialog(
           title: Text(l10n.appLockHelpTitle),
           content: Text(l10n.appLockHelpBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.ok),
-          ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.ok),
+            ),
+          ],
         );
       },
     );
+  }
+
+  Future<void> _login() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => LoginScreen(authSession: _authSession)),
+    );
+    await _checkLoginStatus();
+  }
+
+  Future<void> _logout() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(l10n.logoutConfirmTitle),
+          content: Text(l10n.logoutConfirmMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.logoutButton),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    await _authSession.clear();
+    if (mounted) {
+      await _checkLoginStatus();
+    }
   }
 }

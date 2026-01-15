@@ -150,4 +150,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String entriesOnDateTitle(String date) {
     return 'Entries on $date';
   }
+
+  @override
+  String get loginTitle => 'Login';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get emailRequired => 'Please enter your email';
+
+  @override
+  String get emailInvalid => 'Please enter a valid email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get passwordRequired => 'Please enter your password';
+
+  @override
+  String get loginButton => 'Login';
+
+  @override
+  String get loginSuccess => 'Login successful';
+
+  @override
+  String get loginFailed => 'Login failed. Please try again.';
+
+  @override
+  String get accountSection => 'Account';
+
+  @override
+  String get loginButtonTitle => 'Login to sync';
+
+  @override
+  String get logoutButton => 'Logout';
+
+  @override
+  String get logoutConfirmTitle => 'Logout?';
+
+  @override
+  String get logoutConfirmMessage => 'This will stop syncing your journal.';
 }

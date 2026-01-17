@@ -13,6 +13,8 @@ import 'crypto_service.dart';
 import 'entry.dart';
 import 'entry_payload.dart';
 import 'isar_service.dart';
+import 'journal.dart';
+import 'journal_repository.dart';
 import 'journal_api_client.dart';
 import 'network_file_cache.dart';
 import 'qiniu_cloud_storage.dart';
@@ -27,6 +29,7 @@ class EntryRepository {
     this._journalApiClient,
     this._networkFileCache,
     this._authSession,
+    this._journalRepository,
   );
 
   final Isar _isar;
@@ -36,8 +39,10 @@ class EntryRepository {
   final JournalApiClient _journalApiClient;
   final NetworkFileCache _networkFileCache;
   final AuthSession? _authSession;
+  final JournalRepository _journalRepository;
   static const _storage = FlutterSecureStorage();
   static const _legacyMigrationKey = 'migration_local_embeds_v1';
+  static const _lastSelectedJournalIdKey = 'last_selected_journal_id';
 
   JournalApiClient get journalApiClient => _journalApiClient;
 
@@ -46,6 +51,7 @@ class EntryRepository {
     NetworkFileCache? networkFileCache,
     JournalApiClient? journalApiClient,
     AuthSession? authSession,
+    JournalRepository? journalRepository,
   }) async {
     final service = await IsarService.open();
     final crypto = await CryptoService.create();
@@ -74,6 +80,9 @@ class EntryRepository {
       }
     }
 
+    final jRepo =
+        journalRepository ?? await JournalRepository.open(service.isar);
+
     final repository = EntryRepository._(
       service.isar,
       crypto,
@@ -82,6 +91,7 @@ class EntryRepository {
       apiClient,
       networkFileCache ?? NetworkFileCache(),
       authSession,
+      jRepo,
     );
     await repository._migrateLegacyLocalEmbeds();
     return repository;
@@ -128,6 +138,22 @@ class EntryRepository {
   }
 
   Future<void> saveEntry(Entry entry) async {
+    if (entry.journalId.isEmpty) {
+      final lastSelectedJournalId = await _storage.read(
+        key: _lastSelectedJournalIdKey,
+      );
+      if (lastSelectedJournalId != null && lastSelectedJournalId.isNotEmpty) {
+        entry.journalId = lastSelectedJournalId;
+      } else {
+        final defaultJournal = await _journalRepository.getDefaultJournal();
+        if (defaultJournal != null) {
+          entry.journalId = defaultJournal.uuid;
+        } else {
+          entry.journalId = '00000000-0000-0000-0000-000000000001';
+        }
+      }
+    }
+
     final payload = EntryPayload(
       title: entry.title,
       contentDeltaJson: entry.contentDeltaJson,
@@ -472,17 +498,26 @@ class EntryRepository {
         .isDirtyEqualTo(true)
         .findAll();
 
+    final pushJournals = await _isar.journals
+        .filter()
+        .isDirtyEqualTo(true)
+        .findAll();
+
     final entryChanges = pushEntries.map(EntryChange.fromEntry).toList();
     final attachmentMetas = pushAttachments
         .map(AttachmentMeta.fromAttachment)
         .toList();
+    final journalChanges = pushJournals.map(JournalChange.fromJournal).toList();
 
     await authSession.withAccessToken((token) async {
-      if (entryChanges.isNotEmpty || attachmentMetas.isNotEmpty) {
+      if (entryChanges.isNotEmpty ||
+          attachmentMetas.isNotEmpty ||
+          journalChanges.isNotEmpty) {
         final pushResponse = await _journalApiClient.pushChanges(
           accessToken: token,
           entries: entryChanges,
           attachmentsMeta: attachmentMetas,
+          journals: journalChanges,
         );
 
         result.entriesPushed = pushResponse.accepted.length;
@@ -511,6 +546,19 @@ class EntryRepository {
             attachment.isDirty = false;
             await _isar.writeTxn(() async {
               await _isar.attachments.put(attachment);
+            });
+          }
+        }
+
+        for (final journalId in pushResponse.accepted) {
+          final journal = await _isar.journals
+              .filter()
+              .uuidEqualTo(journalId)
+              .findFirst();
+          if (journal != null) {
+            journal.isDirty = false;
+            await _isar.writeTxn(() async {
+              await _isar.journals.put(journal);
             });
           }
         }
@@ -553,6 +601,7 @@ class EntryRepository {
         if (existing == null) {
           final entry = Entry()
             ..uuid = entryChange.id
+            ..journalId = entryChange.journalId
             ..payloadEncrypted = entryChange.payloadEncrypted
             ..payloadVersion = entryChange.payloadVersion
             ..attachmentIds = List<String>.from(entryChange.attachmentIds)
@@ -564,6 +613,7 @@ class EntryRepository {
           await _isar.entrys.put(entry);
         } else {
           existing
+            ..journalId = entryChange.journalId
             ..payloadEncrypted = entryChange.payloadEncrypted
             ..payloadVersion = entryChange.payloadVersion
             ..attachmentIds = List<String>.from(entryChange.attachmentIds)
@@ -572,6 +622,34 @@ class EntryRepository {
             ..serverRevision = entryChange.revision
             ..isDirty = false;
           await _isar.entrys.put(existing);
+        }
+      }
+
+      for (final journalChange in response.journals) {
+        final existing = await _isar.journals
+            .filter()
+            .uuidEqualTo(journalChange.id)
+            .findFirst();
+        if (existing == null) {
+          final journal = Journal()
+            ..uuid = journalChange.id
+            ..name = journalChange.name
+            ..color = journalChange.color
+            ..createdAt = journalChange.createdAt
+            ..updatedAt = journalChange.updatedAt
+            ..deletedAt = journalChange.deletedAt
+            ..serverRevision = journalChange.revision
+            ..isDirty = false;
+          await _isar.journals.put(journal);
+        } else {
+          existing
+            ..name = journalChange.name
+            ..color = journalChange.color
+            ..updatedAt = journalChange.updatedAt
+            ..deletedAt = journalChange.deletedAt
+            ..serverRevision = journalChange.revision
+            ..isDirty = false;
+          await _isar.journals.put(existing);
         }
       }
 

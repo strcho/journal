@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../data/entry.dart';
 import '../data/entry_repository.dart';
+import '../data/journal_repository.dart';
 import '../utils/quill_document.dart';
 import 'entry_editor_screen.dart';
 import 'quill_image_embed_builder.dart';
@@ -13,10 +14,12 @@ class EntryDetailScreen extends StatefulWidget {
   const EntryDetailScreen({
     super.key,
     required this.repository,
+    required this.journalRepository,
     required this.entryId,
   });
 
   final EntryRepository repository;
+  final JournalRepository journalRepository;
   final int entryId;
 
   @override
@@ -58,6 +61,7 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
                   MaterialPageRoute(
                     builder: (_) => EntryEditorScreen(
                       repository: widget.repository,
+                      journalRepository: widget.journalRepository,
                       entryId: entry.id,
                     ),
                   ),

@@ -9,15 +9,23 @@ import 'package:uuid/uuid.dart';
 
 import '../data/entry.dart';
 import '../data/entry_repository.dart';
+import '../data/journal_repository.dart';
 import '../utils/attachment_embed.dart';
 import '../utils/quill_document.dart';
 import 'entry_rich_text_toolbar.dart';
 import 'quill_image_embed_builder.dart';
+import 'widgets/journal_selector.dart';
 
 class EntryEditorScreen extends StatefulWidget {
-  const EntryEditorScreen({super.key, required this.repository, this.entryId});
+  const EntryEditorScreen({
+    super.key,
+    required this.repository,
+    required this.journalRepository,
+    this.entryId,
+  });
 
   final EntryRepository repository;
+  final JournalRepository journalRepository;
   final int? entryId;
 
   @override
@@ -30,6 +38,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
   QuillController? _quillController;
   Entry? _entry;
   DateTime? _selectedDate;
+  String _journalId = '';
   bool _isSaving = false;
 
   @override
@@ -56,6 +65,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
     final now = DateTime.now();
     return Entry()
       ..uuid = const Uuid().v4()
+      ..journalId = '00000000-0000-0000-0000-000000000001'
       ..title = ''
       ..contentDeltaJson = ''
       ..plainText = ''
@@ -71,6 +81,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
 
     _entry = entry;
     _titleController.text = entry.title;
+    _journalId = entry.journalId;
     _selectedDate ??= DateUtils.dateOnly(entry.createdAt);
     final document = quillDocumentFromJson(entry.contentDeltaJson);
     _quillController = QuillController(
@@ -112,6 +123,14 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  child: JournalSelector(
+                    journalRepository: widget.journalRepository,
+                    selectedJournalId: _journalId,
+                    onChanged: (value) => setState(() => _journalId = value),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                   child: TextField(
                     controller: _titleController,
                     decoration: InputDecoration(
@@ -281,6 +300,7 @@ class _EntryEditorScreenState extends State<EntryEditorScreen> {
     await _deleteRemovedAttachments(entry.attachmentIds, attachments);
 
     entry
+      ..journalId = _journalId
       ..title = title
       ..contentDeltaJson = deltaJson
       ..plainText = plainText

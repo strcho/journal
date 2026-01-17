@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'entry.dart';
+part of 'journal.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,18 +9,18 @@ part of 'entry.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetEntryCollection on Isar {
-  IsarCollection<Entry> get entrys => this.collection();
+extension GetJournalCollection on Isar {
+  IsarCollection<Journal> get journals => this.collection();
 }
 
-const EntrySchema = CollectionSchema(
-  name: r'Entry',
-  id: 744406108402872943,
+const JournalSchema = CollectionSchema(
+  name: r'Journal',
+  id: -4704215588566915531,
   properties: {
-    r'attachmentIds': PropertySchema(
+    r'color': PropertySchema(
       id: 0,
-      name: r'attachmentIds',
-      type: IsarType.stringList,
+      name: r'color',
+      type: IsarType.string,
     ),
     r'createdAt': PropertySchema(
       id: 1,
@@ -37,41 +37,31 @@ const EntrySchema = CollectionSchema(
       name: r'isDirty',
       type: IsarType.bool,
     ),
-    r'journalId': PropertySchema(
+    r'name': PropertySchema(
       id: 4,
-      name: r'journalId',
+      name: r'name',
       type: IsarType.string,
-    ),
-    r'payloadEncrypted': PropertySchema(
-      id: 5,
-      name: r'payloadEncrypted',
-      type: IsarType.string,
-    ),
-    r'payloadVersion': PropertySchema(
-      id: 6,
-      name: r'payloadVersion',
-      type: IsarType.long,
     ),
     r'serverRevision': PropertySchema(
-      id: 7,
+      id: 5,
       name: r'serverRevision',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 8,
+      id: 6,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
     r'uuid': PropertySchema(
-      id: 9,
+      id: 7,
       name: r'uuid',
       type: IsarType.string,
     )
   },
-  estimateSize: _entryEstimateSize,
-  serialize: _entrySerialize,
-  deserialize: _entryDeserialize,
-  deserializeProp: _entryDeserializeProp,
+  estimateSize: _journalEstimateSize,
+  serialize: _journalSerialize,
+  deserialize: _journalDeserialize,
+  deserializeProp: _journalDeserializeProp,
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
@@ -82,19 +72,6 @@ const EntrySchema = CollectionSchema(
       properties: [
         IndexPropertySchema(
           name: r'uuid',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    ),
-    r'journalId': IndexSchema(
-      id: 1745640946427815323,
-      name: r'journalId',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'journalId',
           type: IndexType.hash,
           caseSensitive: true,
         )
@@ -116,71 +93,65 @@ const EntrySchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
-  getId: _entryGetId,
-  getLinks: _entryGetLinks,
-  attach: _entryAttach,
+  getId: _journalGetId,
+  getLinks: _journalGetLinks,
+  attach: _journalAttach,
   version: '3.1.0+1',
 );
 
-int _entryEstimateSize(
-  Entry object,
+int _journalEstimateSize(
+  Journal object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.attachmentIds.length * 3;
   {
-    for (var i = 0; i < object.attachmentIds.length; i++) {
-      final value = object.attachmentIds[i];
-      bytesCount += value.length * 3;
+    final value = object.color;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.journalId.length * 3;
-  bytesCount += 3 + object.payloadEncrypted.length * 3;
+  bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.uuid.length * 3;
   return bytesCount;
 }
 
-void _entrySerialize(
-  Entry object,
+void _journalSerialize(
+  Journal object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeStringList(offsets[0], object.attachmentIds);
+  writer.writeString(offsets[0], object.color);
   writer.writeDateTime(offsets[1], object.createdAt);
   writer.writeDateTime(offsets[2], object.deletedAt);
   writer.writeBool(offsets[3], object.isDirty);
-  writer.writeString(offsets[4], object.journalId);
-  writer.writeString(offsets[5], object.payloadEncrypted);
-  writer.writeLong(offsets[6], object.payloadVersion);
-  writer.writeLong(offsets[7], object.serverRevision);
-  writer.writeDateTime(offsets[8], object.updatedAt);
-  writer.writeString(offsets[9], object.uuid);
+  writer.writeString(offsets[4], object.name);
+  writer.writeLong(offsets[5], object.serverRevision);
+  writer.writeDateTime(offsets[6], object.updatedAt);
+  writer.writeString(offsets[7], object.uuid);
 }
 
-Entry _entryDeserialize(
+Journal _journalDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Entry();
-  object.attachmentIds = reader.readStringList(offsets[0]) ?? [];
+  final object = Journal();
+  object.color = reader.readStringOrNull(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.deletedAt = reader.readDateTimeOrNull(offsets[2]);
   object.id = id;
   object.isDirty = reader.readBool(offsets[3]);
-  object.journalId = reader.readString(offsets[4]);
-  object.payloadEncrypted = reader.readString(offsets[5]);
-  object.payloadVersion = reader.readLong(offsets[6]);
-  object.serverRevision = reader.readLongOrNull(offsets[7]);
-  object.updatedAt = reader.readDateTime(offsets[8]);
-  object.uuid = reader.readString(offsets[9]);
+  object.name = reader.readString(offsets[4]);
+  object.serverRevision = reader.readLongOrNull(offsets[5]);
+  object.updatedAt = reader.readDateTime(offsets[6]);
+  object.uuid = reader.readString(offsets[7]);
   return object;
 }
 
-P _entryDeserializeProp<P>(
+P _journalDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -188,7 +159,7 @@ P _entryDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -198,38 +169,34 @@ P _entryDeserializeProp<P>(
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
-    case 6:
-      return (reader.readLong(offset)) as P;
-    case 7:
       return (reader.readLongOrNull(offset)) as P;
-    case 8:
+    case 6:
       return (reader.readDateTime(offset)) as P;
-    case 9:
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _entryGetId(Entry object) {
+Id _journalGetId(Journal object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _entryGetLinks(Entry object) {
+List<IsarLinkBase<dynamic>> _journalGetLinks(Journal object) {
   return [];
 }
 
-void _entryAttach(IsarCollection<dynamic> col, Id id, Entry object) {
+void _journalAttach(IsarCollection<dynamic> col, Id id, Journal object) {
   object.id = id;
 }
 
-extension EntryByIndex on IsarCollection<Entry> {
-  Future<Entry?> getByUuid(String uuid) {
+extension JournalByIndex on IsarCollection<Journal> {
+  Future<Journal?> getByUuid(String uuid) {
     return getByIndex(r'uuid', [uuid]);
   }
 
-  Entry? getByUuidSync(String uuid) {
+  Journal? getByUuidSync(String uuid) {
     return getByIndexSync(r'uuid', [uuid]);
   }
 
@@ -241,12 +208,12 @@ extension EntryByIndex on IsarCollection<Entry> {
     return deleteByIndexSync(r'uuid', [uuid]);
   }
 
-  Future<List<Entry?>> getAllByUuid(List<String> uuidValues) {
+  Future<List<Journal?>> getAllByUuid(List<String> uuidValues) {
     final values = uuidValues.map((e) => [e]).toList();
     return getAllByIndex(r'uuid', values);
   }
 
-  List<Entry?> getAllByUuidSync(List<String> uuidValues) {
+  List<Journal?> getAllByUuidSync(List<String> uuidValues) {
     final values = uuidValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'uuid', values);
   }
@@ -261,31 +228,31 @@ extension EntryByIndex on IsarCollection<Entry> {
     return deleteAllByIndexSync(r'uuid', values);
   }
 
-  Future<Id> putByUuid(Entry object) {
+  Future<Id> putByUuid(Journal object) {
     return putByIndex(r'uuid', object);
   }
 
-  Id putByUuidSync(Entry object, {bool saveLinks = true}) {
+  Id putByUuidSync(Journal object, {bool saveLinks = true}) {
     return putByIndexSync(r'uuid', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByUuid(List<Entry> objects) {
+  Future<List<Id>> putAllByUuid(List<Journal> objects) {
     return putAllByIndex(r'uuid', objects);
   }
 
-  List<Id> putAllByUuidSync(List<Entry> objects, {bool saveLinks = true}) {
+  List<Id> putAllByUuidSync(List<Journal> objects, {bool saveLinks = true}) {
     return putAllByIndexSync(r'uuid', objects, saveLinks: saveLinks);
   }
 }
 
-extension EntryQueryWhereSort on QueryBuilder<Entry, Entry, QWhere> {
-  QueryBuilder<Entry, Entry, QAfterWhere> anyId() {
+extension JournalQueryWhereSort on QueryBuilder<Journal, Journal, QWhere> {
+  QueryBuilder<Journal, Journal, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhere> anyUpdatedAt() {
+  QueryBuilder<Journal, Journal, QAfterWhere> anyUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'updatedAt'),
@@ -294,8 +261,8 @@ extension EntryQueryWhereSort on QueryBuilder<Entry, Entry, QWhere> {
   }
 }
 
-extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
-  QueryBuilder<Entry, Entry, QAfterWhereClause> idEqualTo(Id id) {
+extension JournalQueryWhere on QueryBuilder<Journal, Journal, QWhereClause> {
+  QueryBuilder<Journal, Journal, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -304,7 +271,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<Journal, Journal, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -326,7 +293,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<Journal, Journal, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -335,7 +302,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<Journal, Journal, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -344,7 +311,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> idBetween(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -360,7 +327,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> uuidEqualTo(String uuid) {
+  QueryBuilder<Journal, Journal, QAfterWhereClause> uuidEqualTo(String uuid) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'uuid',
@@ -369,7 +336,8 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> uuidNotEqualTo(String uuid) {
+  QueryBuilder<Journal, Journal, QAfterWhereClause> uuidNotEqualTo(
+      String uuid) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -403,52 +371,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> journalIdEqualTo(
-      String journalId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'journalId',
-        value: [journalId],
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterWhereClause> journalIdNotEqualTo(
-      String journalId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'journalId',
-              lower: [],
-              upper: [journalId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'journalId',
-              lower: [journalId],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'journalId',
-              lower: [journalId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'journalId',
-              lower: [],
-              upper: [journalId],
-              includeUpper: false,
-            ));
-      }
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterWhereClause> updatedAtEqualTo(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> updatedAtEqualTo(
       DateTime updatedAt) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
@@ -458,7 +381,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> updatedAtNotEqualTo(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> updatedAtNotEqualTo(
       DateTime updatedAt) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -493,7 +416,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> updatedAtGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> updatedAtGreaterThan(
     DateTime updatedAt, {
     bool include = false,
   }) {
@@ -507,7 +430,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> updatedAtLessThan(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> updatedAtLessThan(
     DateTime updatedAt, {
     bool include = false,
   }) {
@@ -521,7 +444,7 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterWhereClause> updatedAtBetween(
+  QueryBuilder<Journal, Journal, QAfterWhereClause> updatedAtBetween(
     DateTime lowerUpdatedAt,
     DateTime upperUpdatedAt, {
     bool includeLower = true,
@@ -539,62 +462,77 @@ extension EntryQueryWhere on QueryBuilder<Entry, Entry, QWhereClause> {
   }
 }
 
-extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsElementEqualTo(
-    String value, {
+extension JournalQueryFilter
+    on QueryBuilder<Journal, Journal, QFilterCondition> {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'color',
+      ));
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'color',
+      ));
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorEqualTo(
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementGreaterThan(
-    String value, {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorGreaterThan(
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementLessThan(
-    String value, {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorLessThan(
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsElementBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'attachmentIds',
+        property: r'color',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -604,163 +542,75 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementStartsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementEndsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'attachmentIds',
+        property: r'color',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsElementMatches(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'attachmentIds',
+        property: r'color',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementIsEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'attachmentIds',
+        property: r'color',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsElementIsNotEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> colorIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'attachmentIds',
+        property: r'color',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      attachmentIdsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> attachmentIdsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'attachmentIds',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> createdAtEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> createdAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -770,7 +620,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> createdAtGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> createdAtGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
@@ -783,7 +633,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> createdAtLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> createdAtLessThan(
     DateTime value, {
     bool include = false,
   }) {
@@ -796,7 +646,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> createdAtBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -813,7 +663,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtIsNull() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'deletedAt',
@@ -821,7 +671,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtIsNotNull() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'deletedAt',
@@ -829,7 +679,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtEqualTo(
       DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -839,7 +689,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtGreaterThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -852,7 +702,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtLessThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -865,7 +715,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> deletedAtBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> deletedAtBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -882,7 +732,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -891,7 +741,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -904,7 +754,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> idLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -917,7 +767,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> idBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -934,7 +784,8 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> isDirtyEqualTo(bool value) {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> isDirtyEqualTo(
+      bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isDirty',
@@ -943,20 +794,20 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -964,14 +815,14 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -979,14 +830,14 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -995,7 +846,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'journalId',
+        property: r'name',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1005,259 +856,75 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdStartsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdEndsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdContains(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'journalId',
+        property: r'name',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdMatches(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'journalId',
+        property: r'name',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdIsEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'journalId',
+        property: r'name',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> journalIdIsNotEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'journalId',
+        property: r'name',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'payloadEncrypted',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'payloadEncrypted',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'payloadEncrypted',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadEncryptedIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'payloadEncrypted',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition>
-      payloadEncryptedIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'payloadEncrypted',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadVersionEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'payloadVersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadVersionGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'payloadVersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadVersionLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'payloadVersion',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> payloadVersionBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'payloadVersion',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionIsNull() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> serverRevisionIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'serverRevision',
@@ -1265,7 +932,8 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionIsNotNull() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition>
+      serverRevisionIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'serverRevision',
@@ -1273,7 +941,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> serverRevisionEqualTo(
       int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1283,7 +951,8 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition>
+      serverRevisionGreaterThan(
     int? value, {
     bool include = false,
   }) {
@@ -1296,7 +965,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> serverRevisionLessThan(
     int? value, {
     bool include = false,
   }) {
@@ -1309,7 +978,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> serverRevisionBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> serverRevisionBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1326,7 +995,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> updatedAtEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> updatedAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1336,7 +1005,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> updatedAtGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> updatedAtGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
@@ -1349,7 +1018,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> updatedAtLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> updatedAtLessThan(
     DateTime value, {
     bool include = false,
   }) {
@@ -1362,7 +1031,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> updatedAtBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> updatedAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -1379,7 +1048,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidEqualTo(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1392,7 +1061,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidGreaterThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1407,7 +1076,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidLessThan(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1422,7 +1091,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidBetween(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1441,7 +1110,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidStartsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1454,7 +1123,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidEndsWith(
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -1467,7 +1136,8 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidContains(String value,
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidContains(
+      String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -1478,7 +1148,8 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidMatches(String pattern,
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidMatches(
+      String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
@@ -1489,7 +1160,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidIsEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'uuid',
@@ -1498,7 +1169,7 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterFilterCondition> uuidIsNotEmpty() {
+  QueryBuilder<Journal, Journal, QAfterFilterCondition> uuidIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'uuid',
@@ -1508,301 +1179,268 @@ extension EntryQueryFilter on QueryBuilder<Entry, Entry, QFilterCondition> {
   }
 }
 
-extension EntryQueryObject on QueryBuilder<Entry, Entry, QFilterCondition> {}
+extension JournalQueryObject
+    on QueryBuilder<Journal, Journal, QFilterCondition> {}
 
-extension EntryQueryLinks on QueryBuilder<Entry, Entry, QFilterCondition> {}
+extension JournalQueryLinks
+    on QueryBuilder<Journal, Journal, QFilterCondition> {}
 
-extension EntryQuerySortBy on QueryBuilder<Entry, Entry, QSortBy> {
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByCreatedAt() {
+extension JournalQuerySortBy on QueryBuilder<Journal, Journal, QSortBy> {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'color', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'color', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByCreatedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByDeletedAt() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByDeletedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deletedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByDeletedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByDeletedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deletedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByIsDirty() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByIsDirty() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDirty', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByIsDirtyDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByIsDirtyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDirty', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByJournalId() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'journalId', Sort.asc);
+      return query.addSortBy(r'name', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByJournalIdDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'journalId', Sort.desc);
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByPayloadEncrypted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadEncrypted', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByPayloadEncryptedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadEncrypted', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByPayloadVersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadVersion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByPayloadVersionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadVersion', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByServerRevision() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByServerRevision() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'serverRevision', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByServerRevisionDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByServerRevisionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'serverRevision', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByUpdatedAt() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByUpdatedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByUuid() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> sortByUuidDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> sortByUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.desc);
     });
   }
 }
 
-extension EntryQuerySortThenBy on QueryBuilder<Entry, Entry, QSortThenBy> {
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByCreatedAt() {
+extension JournalQuerySortThenBy
+    on QueryBuilder<Journal, Journal, QSortThenBy> {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByColor() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'color', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByColorDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'color', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByCreatedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByDeletedAt() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByDeletedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deletedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByDeletedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByDeletedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'deletedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenById() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByIsDirty() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByIsDirty() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDirty', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByIsDirtyDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByIsDirtyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isDirty', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByJournalId() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'journalId', Sort.asc);
+      return query.addSortBy(r'name', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByJournalIdDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByNameDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'journalId', Sort.desc);
+      return query.addSortBy(r'name', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByPayloadEncrypted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadEncrypted', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByPayloadEncryptedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadEncrypted', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByPayloadVersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadVersion', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByPayloadVersionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'payloadVersion', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByServerRevision() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByServerRevision() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'serverRevision', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByServerRevisionDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByServerRevisionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'serverRevision', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByUpdatedAt() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByUpdatedAtDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByUpdatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByUuid() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Entry, Entry, QAfterSortBy> thenByUuidDesc() {
+  QueryBuilder<Journal, Journal, QAfterSortBy> thenByUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.desc);
     });
   }
 }
 
-extension EntryQueryWhereDistinct on QueryBuilder<Entry, Entry, QDistinct> {
-  QueryBuilder<Entry, Entry, QDistinct> distinctByAttachmentIds() {
+extension JournalQueryWhereDistinct
+    on QueryBuilder<Journal, Journal, QDistinct> {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByColor(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'attachmentIds');
+      return query.addDistinctBy(r'color', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByCreatedAt() {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByDeletedAt() {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByDeletedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deletedAt');
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByIsDirty() {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByIsDirty() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isDirty');
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByJournalId(
+  QueryBuilder<Journal, Journal, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'journalId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByPayloadEncrypted(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'payloadEncrypted',
-          caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QDistinct> distinctByPayloadVersion() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'payloadVersion');
-    });
-  }
-
-  QueryBuilder<Entry, Entry, QDistinct> distinctByServerRevision() {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByServerRevision() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'serverRevision');
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByUpdatedAt() {
+  QueryBuilder<Journal, Journal, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
     });
   }
 
-  QueryBuilder<Entry, Entry, QDistinct> distinctByUuid(
+  QueryBuilder<Journal, Journal, QDistinct> distinctByUuid(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'uuid', caseSensitive: caseSensitive);
@@ -1810,68 +1448,57 @@ extension EntryQueryWhereDistinct on QueryBuilder<Entry, Entry, QDistinct> {
   }
 }
 
-extension EntryQueryProperty on QueryBuilder<Entry, Entry, QQueryProperty> {
-  QueryBuilder<Entry, int, QQueryOperations> idProperty() {
+extension JournalQueryProperty
+    on QueryBuilder<Journal, Journal, QQueryProperty> {
+  QueryBuilder<Journal, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Entry, List<String>, QQueryOperations> attachmentIdsProperty() {
+  QueryBuilder<Journal, String?, QQueryOperations> colorProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'attachmentIds');
+      return query.addPropertyName(r'color');
     });
   }
 
-  QueryBuilder<Entry, DateTime, QQueryOperations> createdAtProperty() {
+  QueryBuilder<Journal, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
   }
 
-  QueryBuilder<Entry, DateTime?, QQueryOperations> deletedAtProperty() {
+  QueryBuilder<Journal, DateTime?, QQueryOperations> deletedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'deletedAt');
     });
   }
 
-  QueryBuilder<Entry, bool, QQueryOperations> isDirtyProperty() {
+  QueryBuilder<Journal, bool, QQueryOperations> isDirtyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isDirty');
     });
   }
 
-  QueryBuilder<Entry, String, QQueryOperations> journalIdProperty() {
+  QueryBuilder<Journal, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'journalId');
+      return query.addPropertyName(r'name');
     });
   }
 
-  QueryBuilder<Entry, String, QQueryOperations> payloadEncryptedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'payloadEncrypted');
-    });
-  }
-
-  QueryBuilder<Entry, int, QQueryOperations> payloadVersionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'payloadVersion');
-    });
-  }
-
-  QueryBuilder<Entry, int?, QQueryOperations> serverRevisionProperty() {
+  QueryBuilder<Journal, int?, QQueryOperations> serverRevisionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'serverRevision');
     });
   }
 
-  QueryBuilder<Entry, DateTime, QQueryOperations> updatedAtProperty() {
+  QueryBuilder<Journal, DateTime, QQueryOperations> updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
     });
   }
 
-  QueryBuilder<Entry, String, QQueryOperations> uuidProperty() {
+  QueryBuilder<Journal, String, QQueryOperations> uuidProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'uuid');
     });

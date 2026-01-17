@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import '../config/local_config.dart';
 import 'attachment.dart';
 import 'entry.dart';
+import 'journal.dart';
 
 class JournalApiClient {
   JournalApiClient({required this.baseUrl, HttpClient? httpClient})
@@ -58,10 +59,12 @@ class JournalApiClient {
     required String accessToken,
     List<EntryChange> entries = const <EntryChange>[],
     List<AttachmentMeta> attachmentsMeta = const <AttachmentMeta>[],
+    List<JournalChange> journals = const <JournalChange>[],
   }) async {
     final payload = <String, dynamic>{
       'entries': entries.map((entry) => entry.toJson()).toList(),
       'attachmentsMeta': attachmentsMeta.map((meta) => meta.toJson()).toList(),
+      'journals': journals.map((journal) => journal.toJson()).toList(),
     };
     final json = await _postJson(
       '/sync/push',
@@ -69,6 +72,71 @@ class JournalApiClient {
       accessToken: accessToken,
     );
     return PushResponse.fromJson(json);
+  }
+
+  Future<Journal> fetchJournals({required String accessToken}) async {
+    final json = await _getJson('/journals', accessToken: accessToken);
+    final journalsList = (json['journals'] as List<dynamic>?)
+        ?.whereType<Map<String, dynamic>>()
+        .map(Journal.fromJson)
+        .toList();
+    if (journalsList == null || journalsList.isEmpty) {
+      final defaultJournal = Journal()
+        ..uuid = '00000000-0000-0000-0000-000000000001'
+        ..name = '日常'
+        ..color = '#4285F4'
+        ..createdAt = DateTime.now()
+        ..updatedAt = DateTime.now()
+        ..isDirty = false;
+      return defaultJournal;
+    }
+    return journalsList.first;
+  }
+
+  Future<Journal> createJournal({
+    required String accessToken,
+    required String name,
+    String? color,
+  }) async {
+    final payload = <String, dynamic>{
+      'name': name,
+      if (color != null) 'color': color,
+    };
+    final json = await _postJson(
+      '/journals',
+      payload,
+      accessToken: accessToken,
+    );
+    return Journal.fromJson(json);
+  }
+
+  Future<Journal> updateJournal({
+    required String accessToken,
+    required String id,
+    String? name,
+    String? color,
+  }) async {
+    final payload = <String, dynamic>{
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+    };
+    final json = await _postJson(
+      '/journals/$id',
+      payload,
+      accessToken: accessToken,
+    );
+    return Journal.fromJson(json);
+  }
+
+  Future<void> deleteJournal({
+    required String accessToken,
+    required String id,
+  }) async {
+    await _postJson(
+      '/journals/$id',
+      <String, dynamic>{},
+      accessToken: accessToken,
+    );
   }
 
   Future<String> getQiniuUploadToken({
@@ -238,6 +306,7 @@ class AuthTokens {
 class EntryChange {
   EntryChange({
     required this.id,
+    required this.journalId,
     required this.payloadEncrypted,
     required this.payloadVersion,
     required this.attachmentIds,
@@ -248,6 +317,7 @@ class EntryChange {
   });
 
   final String id;
+  final String journalId;
   final String payloadEncrypted;
   final int payloadVersion;
   final List<String> attachmentIds;
@@ -259,6 +329,7 @@ class EntryChange {
   factory EntryChange.fromEntry(Entry entry) {
     return EntryChange(
       id: entry.uuid,
+      journalId: entry.journalId,
       payloadEncrypted: entry.payloadEncrypted,
       payloadVersion: entry.payloadVersion,
       attachmentIds: List<String>.from(entry.attachmentIds),
@@ -272,6 +343,7 @@ class EntryChange {
   factory EntryChange.fromJson(Map<String, dynamic> json) {
     return EntryChange(
       id: json['id'] as String? ?? '',
+      journalId: json['journalId'] as String? ?? '',
       payloadEncrypted: json['payloadEncrypted'] as String? ?? '',
       payloadVersion: (json['payloadVersion'] as num?)?.toInt() ?? 1,
       attachmentIds:
@@ -290,6 +362,7 @@ class EntryChange {
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
+    'journalId': journalId,
     'payloadEncrypted': payloadEncrypted,
     'payloadVersion': payloadVersion,
     'attachmentIds': attachmentIds,
@@ -366,11 +439,13 @@ class SyncChangesResponse {
     required this.latestRevision,
     required this.entries,
     required this.attachments,
+    required this.journals,
   });
 
   final int latestRevision;
   final List<EntryChange> entries;
   final List<AttachmentMeta> attachments;
+  final List<JournalChange> journals;
 
   factory SyncChangesResponse.fromJson(Map<String, dynamic> json) {
     return SyncChangesResponse(
@@ -387,8 +462,76 @@ class SyncChangesResponse {
               .map(AttachmentMeta.fromJson)
               .toList() ??
           const <AttachmentMeta>[],
+      journals:
+          (json['journals'] as List<dynamic>?)
+              ?.whereType<Map<String, dynamic>>()
+              .map(JournalChange.fromJson)
+              .toList() ??
+          const <JournalChange>[],
     );
   }
+}
+
+class JournalChange {
+  JournalChange({
+    required this.id,
+    required this.name,
+    required this.color,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    this.revision,
+  });
+
+  final String id;
+  final String name;
+  final String color;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final int? revision;
+
+  factory JournalChange.fromJournal(Journal journal) {
+    return JournalChange(
+      id: journal.uuid,
+      name: journal.name,
+      color: journal.color ?? '#000000',
+      createdAt: journal.createdAt,
+      updatedAt: journal.updatedAt,
+      deletedAt: journal.deletedAt,
+      revision: journal.serverRevision,
+    );
+  }
+
+  factory JournalChange.fromJson(Map<String, dynamic> json) {
+    final createdAtStr = json['createdAt'] as String?;
+    final updatedAtStr = json['updatedAt'] as String?;
+    final deletedAtStr = json['deletedAt'] as String?;
+
+    return JournalChange(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      color: json['color'] as String? ?? '#000000',
+      createdAt: createdAtStr != null
+          ? DateTime.parse(createdAtStr)
+          : DateTime.now(),
+      updatedAt: updatedAtStr != null
+          ? DateTime.parse(updatedAtStr)
+          : DateTime.now(),
+      deletedAt: deletedAtStr != null ? DateTime.parse(deletedAtStr) : null,
+      revision: (json['revision'] as num?)?.toInt(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': id,
+    'name': name,
+    'color': color,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+    'deletedAt': deletedAt?.toIso8601String(),
+    'revision': revision,
+  };
 }
 
 class PushResponse {

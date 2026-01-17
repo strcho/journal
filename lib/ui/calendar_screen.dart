@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../data/entry.dart';
 import '../data/entry_repository.dart';
+import '../data/journal_repository.dart';
 import '../security/app_lock_service.dart';
 import 'entry_detail_screen.dart';
 import 'entry_list_screen.dart';
@@ -12,10 +13,12 @@ class CalendarScreen extends StatefulWidget {
   const CalendarScreen({
     super.key,
     required this.repository,
+    required this.journalRepository,
     required this.appLockService,
   });
 
   final EntryRepository repository;
+  final JournalRepository journalRepository;
   final AppLockService appLockService;
 
   @override
@@ -150,6 +153,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         MaterialPageRoute(
           builder: (_) => EntryDetailScreen(
             repository: widget.repository,
+            journalRepository: widget.journalRepository,
             entryId: dayEntries.first.id,
           ),
         ),
@@ -165,6 +169,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       MaterialPageRoute(
         builder: (_) => EntryListScreen(
           repository: widget.repository,
+          journalRepository: widget.journalRepository,
           appLockService: widget.appLockService,
           dayFilter: normalizedDay,
           titleOverride: l10n.entriesOnDateTitle(dateLabel),

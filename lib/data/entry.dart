@@ -9,6 +9,9 @@ class Entry {
   @Index(unique: true)
   late String uuid;
 
+  @Index()
+  late String journalId;
+
   late String payloadEncrypted;
   int payloadVersion = 1;
 

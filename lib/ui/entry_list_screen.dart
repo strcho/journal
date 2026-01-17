@@ -6,16 +6,19 @@ import 'package:intl/intl.dart';
 
 import '../data/entry.dart';
 import '../data/entry_repository.dart';
+import '../data/journal_repository.dart';
 import '../security/app_lock_service.dart';
 import 'calendar_screen.dart';
 import 'entry_detail_screen.dart';
 import 'entry_editor_screen.dart';
 import 'settings_screen.dart';
+import 'widgets/journal_selector.dart';
 
 class EntryListScreen extends StatefulWidget {
   const EntryListScreen({
     super.key,
     required this.repository,
+    required this.journalRepository,
     required this.appLockService,
     this.dayFilter,
     this.titleOverride,
@@ -25,6 +28,7 @@ class EntryListScreen extends StatefulWidget {
   });
 
   final EntryRepository repository;
+  final JournalRepository journalRepository;
   final AppLockService appLockService;
   final DateTime? dayFilter;
   final String? titleOverride;
@@ -39,6 +43,7 @@ class EntryListScreen extends StatefulWidget {
 class _EntryListScreenState extends State<EntryListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  String _journalFilter = '';
 
   @override
   void dispose() {
@@ -62,6 +67,7 @@ class _EntryListScreenState extends State<EntryListScreen> {
                 MaterialPageRoute(
                   builder: (_) => CalendarScreen(
                     repository: widget.repository,
+                    journalRepository: widget.journalRepository,
                     appLockService: widget.appLockService,
                   ),
                 ),
@@ -110,100 +116,120 @@ class _EntryListScreenState extends State<EntryListScreen> {
               )
             : null,
       ),
-      body: StreamBuilder<List<Entry>>(
-        stream: widget.repository.watchEntries(query: _query),
-        builder: (context, snapshot) {
-          final entries = _filterEntries(snapshot.data ?? []);
-          if (entries.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.auto_stories, size: 48),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.noEntriesTitle,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(l10n.noEntriesBody),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: () => _openEditor(context),
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.newEntry),
-                    ),
-                  ],
-                ),
+      body: Column(
+        children: [
+          if (widget.showSearch)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: JournalSelector(
+                journalRepository: widget.journalRepository,
+                selectedJournalId: _journalFilter,
+                onChanged: (value) => setState(() => _journalFilter = value),
               ),
-            );
-          }
-
-          final rows = _buildRows(entries);
-          return ListView.builder(
-            padding: const EdgeInsets.only(top: 8, bottom: 8),
-            itemCount: rows.length,
-            itemBuilder: (context, index) {
-              final row = rows[index];
-              if (row.headerDay != null) {
-                return _DateHeader(day: row.headerDay!, l10n: l10n);
-              }
-
-              final entry = row.entry!;
-              final title = entry.title.trim().isEmpty
-                  ? l10n.untitled
-                  : entry.title.trim();
-              final preview = entry.plainText.trim().replaceAll('\n', ' ');
-              final trailingTime = timeFormat.format(entry.createdAt);
-
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    dense: true,
-                    title: Text(title),
-                    subtitle: preview.isEmpty
-                        ? Text(l10n.noContent)
-                        : Text(
-                            preview,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+            ),
+          Expanded(
+            child: StreamBuilder<List<Entry>>(
+              stream: widget.repository.watchEntries(query: _query),
+              builder: (context, snapshot) {
+                final entries = _filterEntries(snapshot.data ?? []);
+                if (entries.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.auto_stories, size: 48),
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.noEntriesTitle,
+                            style: const TextStyle(fontSize: 18),
                           ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          trailingTime,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        if (entry.attachmentIds.isNotEmpty) ...[
-                          const SizedBox(width: 12),
-                          _EntryThumbnail(
-                            attachmentId: entry.attachmentIds.first,
-                            repository: widget.repository,
+                          const SizedBox(height: 8),
+                          Text(l10n.noEntriesBody),
+                          const SizedBox(height: 16),
+                          FilledButton.icon(
+                            onPressed: () => _openEditor(context),
+                            icon: const Icon(Icons.add),
+                            label: Text(l10n.newEntry),
                           ),
                         ],
-                      ],
-                    ),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => EntryDetailScreen(
-                          repository: widget.repository,
-                          entryId: entry.id,
-                        ),
                       ),
                     ),
-                  ),
-                  if (index != rows.length - 1 && rows[index + 1].entry != null)
-                    const Divider(height: 1),
-                ],
-              );
-            },
-          );
-        },
+                  );
+                }
+
+                final rows = _buildRows(entries);
+                return ListView.builder(
+                  padding: const EdgeInsets.only(top: 8, bottom: 8),
+                  itemCount: rows.length,
+                  itemBuilder: (context, index) {
+                    final row = rows[index];
+                    if (row.headerDay != null) {
+                      return _DateHeader(day: row.headerDay!, l10n: l10n);
+                    }
+
+                    final entry = row.entry!;
+                    final title = entry.title.trim().isEmpty
+                        ? l10n.untitled
+                        : entry.title.trim();
+                    final preview = entry.plainText.trim().replaceAll(
+                      '\n',
+                      ' ',
+                    );
+                    final trailingTime = timeFormat.format(entry.createdAt);
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          dense: true,
+                          title: Text(title),
+                          subtitle: preview.isEmpty
+                              ? Text(l10n.noContent)
+                              : Text(
+                                  preview,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                trailingTime,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              if (entry.attachmentIds.isNotEmpty) ...[
+                                const SizedBox(width: 12),
+                                _EntryThumbnail(
+                                  attachmentId: entry.attachmentIds.first,
+                                  repository: widget.repository,
+                                ),
+                              ],
+                            ],
+                          ),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => EntryDetailScreen(
+                                repository: widget.repository,
+                                journalRepository: widget.journalRepository,
+                                entryId: entry.id,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (index != rows.length - 1 &&
+                            rows[index + 1].entry != null)
+                          const Divider(height: 1),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openEditor(context),
@@ -215,19 +241,31 @@ class _EntryListScreenState extends State<EntryListScreen> {
   void _openEditor(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => EntryEditorScreen(repository: widget.repository),
+        builder: (_) => EntryEditorScreen(
+          repository: widget.repository,
+          journalRepository: widget.journalRepository,
+        ),
       ),
     );
   }
 
   List<Entry> _filterEntries(List<Entry> entries) {
+    var filtered = entries;
+
     final dayFilter = widget.dayFilter;
-    if (dayFilter == null) {
-      return entries;
+    if (dayFilter != null) {
+      filtered = filtered
+          .where((entry) => DateUtils.isSameDay(entry.createdAt, dayFilter))
+          .toList();
     }
-    return entries
-        .where((entry) => DateUtils.isSameDay(entry.createdAt, dayFilter))
-        .toList();
+
+    if (_journalFilter.isNotEmpty) {
+      filtered = filtered
+          .where((entry) => entry.journalId == _journalFilter)
+          .toList();
+    }
+
+    return filtered;
   }
 
   List<_EntryListRow> _buildRows(List<Entry> entries) {

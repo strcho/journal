@@ -6,6 +6,8 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'data/auth_session.dart';
 import 'data/entry_repository.dart';
 import 'data/journal_api_client.dart';
+import 'data/journal_repository.dart';
+import 'data/isar_service.dart';
 import 'security/app_lock_service.dart';
 import 'ui/app_lock_gate.dart';
 import 'ui/entry_list_screen.dart';
@@ -14,22 +16,33 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final apiClient = JournalApiClient.fromConfig();
   final authSession = AuthSession(client: apiClient);
+  final isarService = await IsarService.open();
+  final journalRepository = await JournalRepository.open(isarService.isar);
   final repository = await EntryRepository.open(
     journalApiClient: apiClient,
     authSession: authSession,
+    journalRepository: journalRepository,
   );
   final appLockService = await AppLockService.create();
-  runApp(MyApp(repository: repository, appLockService: appLockService));
+  runApp(
+    MyApp(
+      repository: repository,
+      journalRepository: journalRepository,
+      appLockService: appLockService,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this.repository,
+    required this.journalRepository,
     required this.appLockService,
   });
 
   final EntryRepository repository;
+  final JournalRepository journalRepository;
   final AppLockService appLockService;
 
   @override
@@ -62,6 +75,7 @@ class MyApp extends StatelessWidget {
         appLockService: appLockService,
         child: EntryListScreen(
           repository: repository,
+          journalRepository: journalRepository,
           appLockService: appLockService,
         ),
       ),

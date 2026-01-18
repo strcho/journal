@@ -75,5 +75,14 @@
   "logoutConfirmTitle": "Logout?",
   "logoutConfirmMessage": "Are you sure you want to logout?",
   "entryLoadError": "Failed to load entry",
-  "loginFailed": "Login failed"
+  "loginFailed": "Login failed",
+  "entryTypeDiary": "Diary",
+  "entryTypeNote": "Note",
+  "entryTypeTodo": "Todo",
+  "locationPlaceholder": "Location (optional)",
+  "addChecklistItem": "Add checklist item",
+  "addTodoItem": "Add item",
+  "editChecklistItem": "Edit checklist item",
+  "save": "Save",
+  "checklistEmpty": "Add checklist items"
 }

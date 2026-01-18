@@ -26,6 +26,32 @@ class JournalSelector extends StatefulWidget {
 class _JournalSelectorState extends State<JournalSelector> {
   static const _storage = FlutterSecureStorage();
   static const _lastSelectedJournalIdKey = 'last_selected_journal_id';
+  List<Journal> _cachedJournals = [];
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialJournals();
+  }
+
+  Future<void> _loadInitialJournals() async {
+    try {
+      final journals = await widget.journalRepository.getJournals();
+      if (mounted) {
+        setState(() {
+          _cachedJournals = journals;
+          _isInitialized = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+    }
+  }
 
   Future<void> _saveSelectedJournalId(String journalId) async {
     await _storage.write(key: _lastSelectedJournalIdKey, value: journalId);
@@ -181,8 +207,11 @@ class _JournalSelectorState extends State<JournalSelector> {
   Widget build(BuildContext context) {
     return StreamBuilder<List<Journal>>(
       stream: widget.journalRepository.watchJournals(),
+      initialData: _isInitialized ? _cachedJournals : null,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        final journals = snapshot.data ?? _cachedJournals;
+
+        if (!_isInitialized && journals.isEmpty) {
           return Container(
             height: 56,
             decoration: BoxDecoration(
@@ -210,7 +239,6 @@ class _JournalSelectorState extends State<JournalSelector> {
           );
         }
 
-        final journals = snapshot.data ?? [];
         if (journals.isEmpty) {
           return Container(
             height: 56,

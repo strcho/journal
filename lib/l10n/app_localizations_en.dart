@@ -191,4 +191,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginFailed => 'Login failed';
+
+  @override
+  String get entryTypeDiary => 'Diary';
+
+  @override
+  String get entryTypeNote => 'Note';
+
+  @override
+  String get entryTypeTodo => 'Todo';
+
+  @override
+  String get locationPlaceholder => 'Location (optional)';
+
+  @override
+  String get addChecklistItem => 'Add checklist item';
+
+  @override
+  String get addTodoItem => 'Add item';
+
+  @override
+  String get editChecklistItem => 'Edit checklist item';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get checklistEmpty => 'Add checklist items';
 }

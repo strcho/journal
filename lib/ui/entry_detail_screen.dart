@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_day_one/l10n/app_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../data/entry.dart';
 import '../data/entry_repository.dart';
@@ -82,6 +83,39 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
               ),
               const SizedBox(height: 4),
               Text(dateLabel, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              if (entry.location != null && entry.location!.isNotEmpty)
+                InkWell(
+                  onTap: () {
+                    if (entry.latitude != null && entry.longitude != null) {
+                      _openMap(entry.latitude!, entry.longitude!);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(
+                          entry.latitude != null && entry.longitude != null
+                              ? Icons.gps_fixed
+                              : Icons.location_on_outlined,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            entry.location!,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 16),
               _EntryContent(
                 repository: widget.repository,
@@ -121,6 +155,13 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
       if (context.mounted) {
         Navigator.of(context).pop();
       }
+    }
+  }
+
+  Future<void> _openMap(double latitude, double longitude) async {
+    final url = Uri(scheme: 'geo', host: '0,0', path: '$latitude,$longitude');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     }
   }
 }

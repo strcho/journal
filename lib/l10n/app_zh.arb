@@ -75,5 +75,14 @@
   "logoutConfirmTitle": "退出登录？",
   "logoutConfirmMessage": "确定要退出登录吗？",
   "entryLoadError": "加载日记失败",
-  "loginFailed": "登录失败"
+  "loginFailed": "登录失败",
+  "entryTypeDiary": "日记",
+  "entryTypeNote": "笔记",
+  "entryTypeTodo": "待办",
+  "locationPlaceholder": "地点（可选）",
+  "addChecklistItem": "添加待办事项",
+  "addTodoItem": "添加项目",
+  "editChecklistItem": "编辑待办事项",
+  "save": "保存",
+  "checklistEmpty": "添加待办事项"
 }

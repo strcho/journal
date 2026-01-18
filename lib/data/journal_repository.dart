@@ -52,7 +52,7 @@ class JournalRepository {
         .filter()
         .deletedAtIsNull()
         .sortByUpdatedAtDesc()
-        .watch(fireImmediately: true);
+        .watch();
   }
 
   Future<List<Journal>> getJournals() async {

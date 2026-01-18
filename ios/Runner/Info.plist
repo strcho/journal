@@ -47,6 +47,8 @@
 	<string>Allow access to your photo library to attach images to diary entries.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow Face ID to unlock your journal.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>需要获取位置以标记日记地点</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>

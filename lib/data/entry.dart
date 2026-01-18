@@ -1,5 +1,7 @@
 import 'package:isar/isar.dart';
 
+import 'checklist_item.dart';
+
 part 'entry.g.dart';
 
 @collection
@@ -41,4 +43,19 @@ class Entry {
 
   @ignore
   List<String> tags = [];
+
+  @ignore
+  String entryType = 'diary';
+
+  @ignore
+  String? location;
+
+  @ignore
+  List<ChecklistItem> checklist = const [];
+
+  @ignore
+  double? latitude;
+
+  @ignore
+  double? longitude;
 }

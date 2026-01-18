@@ -191,4 +191,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginFailed => '登录失败';
+
+  @override
+  String get entryTypeDiary => '日记';
+
+  @override
+  String get entryTypeNote => '笔记';
+
+  @override
+  String get entryTypeTodo => '待办';
+
+  @override
+  String get locationPlaceholder => '地点（可选）';
+
+  @override
+  String get addChecklistItem => '添加待办事项';
+
+  @override
+  String get addTodoItem => '添加项目';
+
+  @override
+  String get editChecklistItem => '编辑待办事项';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get checklistEmpty => '添加待办事项';
 }

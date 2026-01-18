@@ -454,6 +454,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login failed'**
   String get loginFailed;
+
+  /// No description provided for @entryTypeDiary.
+  ///
+  /// In en, this message translates to:
+  /// **'Diary'**
+  String get entryTypeDiary;
+
+  /// No description provided for @entryTypeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get entryTypeNote;
+
+  /// No description provided for @entryTypeTodo.
+  ///
+  /// In en, this message translates to:
+  /// **'Todo'**
+  String get entryTypeTodo;
+
+  /// No description provided for @locationPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Location (optional)'**
+  String get locationPlaceholder;
+
+  /// No description provided for @addChecklistItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add checklist item'**
+  String get addChecklistItem;
+
+  /// No description provided for @addTodoItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addTodoItem;
+
+  /// No description provided for @editChecklistItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit checklist item'**
+  String get editChecklistItem;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @checklistEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add checklist items'**
+  String get checklistEmpty;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

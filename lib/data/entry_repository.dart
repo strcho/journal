@@ -160,6 +160,11 @@ class EntryRepository {
       plainText: entry.plainText,
       mood: entry.mood,
       tags: entry.tags,
+      entryType: entry.entryType,
+      location: entry.location,
+      checklist: entry.checklist,
+      latitude: entry.latitude,
+      longitude: entry.longitude,
     );
     entry.payloadEncrypted = await _cryptoService.encryptString(
       jsonEncode(payload.toJson()),
@@ -708,14 +713,24 @@ class EntryRepository {
         ..contentDeltaJson = payload.contentDeltaJson
         ..plainText = payload.plainText
         ..mood = payload.mood
-        ..tags = List<String>.from(payload.tags);
+        ..tags = List<String>.from(payload.tags)
+        ..entryType = payload.entryType
+        ..location = payload.location
+        ..checklist = payload.checklist
+        ..latitude = payload.latitude
+        ..longitude = payload.longitude;
     } catch (_) {
       entry
         ..title = ''
         ..contentDeltaJson = ''
         ..plainText = ''
         ..mood = null
-        ..tags = [];
+        ..tags = []
+        ..entryType = 'diary'
+        ..location = null
+        ..checklist = []
+        ..latitude = null
+        ..longitude = null;
     }
 
     return entry;
